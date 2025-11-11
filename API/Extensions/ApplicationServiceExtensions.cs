@@ -26,6 +26,8 @@ public static class ApplicationServiceExtensions
 
         services.AddAutoMapper(typeof(MappingProfiles).Assembly);
 
+        services.AddSwaggerGen();
+
         return services;
     }
 }

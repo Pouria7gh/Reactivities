@@ -32,4 +32,7 @@ app.UseCors("CorsPolicy");
 
 app.MapControllers();
 
+app.UseSwagger();
+app.UseSwaggerUI();
+
 app.Run();
