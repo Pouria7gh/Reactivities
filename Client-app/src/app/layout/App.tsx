@@ -52,6 +52,9 @@ function App() {
 
   function handleDeleteActivity(id: string) {
     setActivities(prev => [...prev.filter(x => x.id !== id)]);
+    if (selectedActivity && selectedActivity.id === id) {
+      setSelectedActivity(undefined);
+    }
   }
 
   return (
