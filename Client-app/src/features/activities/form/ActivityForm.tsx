@@ -1,35 +1,38 @@
 import { useState, type ChangeEvent } from "react";
+import { observer } from "mobx-react-lite";
+
+import { useStore } from "../../../app/stores/Store";
 import type { Activity } from "../../../app/models/activity";
 
-interface props {
-  closeForm: () => void;
-  activity?: Activity;
-  createOrEditActivity: (activity: Activity) => void;
-}
+function ActivityForm() {
 
-function ActivityForm({ closeForm, activity: selectedActivity, createOrEditActivity }: props) {
+  const {activityStore} = useStore()
 
-    const initialData = selectedActivity ?? {
-        id: "",
-        title: "",
-        date: "",
-        description: "",
-        category: "",
-        city: "",
-        venue: "",
+  const initialData = activityStore.selectedActivity ?? {
+    id: "",
+    title: "",
+    date: "",
+    description: "",
+    category: "",
+    city: "",
+    venue: "",
+  }
+
+  const [activity, setActivity] = useState(initialData);
+
+  function handleChange(event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) {
+    const {name, value} = event.target;
+    setActivity({...activity, [name]: value});
+  }
+
+  function handleSubmit(activity: Activity) {
+    if(activity.id) {
+      activityStore.editActivity(activity);
+    } else {
+      activityStore.createActivity(activity);
     }
-
-    const [activity, setActivity] = useState(initialData);
-
-    function handleChange(event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) {
-        const {name, value} = event.target;
-        setActivity({...activity, [name]: value});
-    }
-
-    function handleSubmit() {
-        console.log(activity);
-    }
-
+  }
+    
   return (
     <fieldset className="fieldset bg-base-200 border-base-300 rounded-box w-full p-4 inset-ring inset-ring-gray-300 shadow-lg">
       <legend className="fieldset-legend">Edit Activity</legend>
@@ -100,15 +103,17 @@ function ActivityForm({ closeForm, activity: selectedActivity, createOrEditActiv
       />
 
       <div className="flex justify-end">
-        <button className="btn btn-error me-2" onClick={closeForm}>
+        <button className="btn btn-error me-2" onClick={activityStore.closeForm}>
           Cancel
         </button>
-        <button className="btn btn-success" onClick={() => createOrEditActivity(activity)}>
-          Submit
+        <button className="btn btn-success" onClick={() => handleSubmit(activity)}>
+          {activityStore.submitting &&
+          <span className="loading loading-spinner loading-xs"></span>}
+          {!activityStore.submitting && "submit"}
         </button>
       </div>
     </fieldset>
   );
 }
 
-export default ActivityForm
+export default observer(ActivityForm)

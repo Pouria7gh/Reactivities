@@ -1,27 +1,27 @@
-import type { Activity } from "../../../app/models/activity";
+import { useStore } from "../../../app/stores/Store";
 
-interface props {
-  activity: Activity;
-  handleCancelSelectActivity: () => void;
-  openForm: (id: string) => void;
-}
+function Details() {
 
-function Details({ activity, handleCancelSelectActivity, openForm }: props) {
+  const {activityStore} = useStore();
+
+  if (!activityStore.selectedActivity)
+    return;
+
   return (
     <div className="card bg-base-100 w-full inset-ring inset-ring-gray-300 shadow-lg">
       <figure>
         <img
-          src={`/assets/categoryImages/${activity.category}.jpg`}
+          src={`/assets/categoryImages/${activityStore.selectedActivity.category}.jpg`}
           alt="category"
         />
       </figure>
       <div className="card-body">
-        <h2 className="card-title">{activity.title}</h2>
-        <p className="text-blue-500 mb-1">{activity.date}</p>
-        <p>{activity.description}</p>
+        <h2 className="card-title">{activityStore.selectedActivity.title}</h2>
+        <p className="text-blue-500 mb-1">{activityStore.selectedActivity.date}</p>
+        <p>{activityStore.selectedActivity.description}</p>
         <div className="card-actions justify-end">
-          <button className="btn btn-error" onClick={handleCancelSelectActivity}>Cancel</button>
-          <button className="btn btn-info" onClick={() => openForm(activity.id)}>Edit</button>
+          <button className="btn btn-error" onClick={activityStore.cancelSelectActivity}>Cancel</button>
+          <button className="btn btn-info" onClick={() => activityStore.openForm(activityStore.selectedActivity!.id)}>Edit</button>
         </div>
       </div>
     </div>

@@ -1,18 +1,24 @@
-import type { Activity } from "../../../app/models/activity";
+import { useState, type SyntheticEvent, } from "react";
+import { observer } from "mobx-react-lite";
 
-interface props {
-  activities: Activity[];
-  handleSelectActivity: (id: string) => void;
-  deleteActivity: (id: string) => void;
-}
+import { useStore } from "../../../app/stores/Store";
 
-function ActivityList({ activities, handleSelectActivity, deleteActivity } : props) {
+function ActivityList() {
+  const [target, setTarget] = useState("");
+  const {activityStore} = useStore();
+  const { activitiesByDate, deleteActivity, deleting, selectActivity } = activityStore;
+
+  function handleDeleteActivity(ev: SyntheticEvent<HTMLButtonElement>, id: string) {
+    setTarget(ev.currentTarget.name);
+    deleteActivity(id);
+  }
+
   return (
     <ul className="list bg-base-100 rounded-box shadow-md">
       <li className="p-4 pb-2 text-xs opacity-60 tracking-wide">
         Most popular activities
       </li>
-      {activities.map((activity) => (
+      {activitiesByDate.map((activity) => (
         <li
           className="list-row inset-ring inset-ring-gray-300 shadow-lg mb-3"
           key={activity.id}
@@ -42,8 +48,12 @@ function ActivityList({ activities, handleSelectActivity, deleteActivity } : pro
           </div>
 
           <div className="self-end flex align-end">
-            <button className="btn btn-error me-1" onClick={() => deleteActivity(activity.id)}>Delete</button>
-            <button className="btn btn-primary" onClick={() => handleSelectActivity(activity.id)}>View</button>
+            <button className="btn btn-error me-1" name={activity.id} onClick={(ev) => { handleDeleteActivity(ev, activity.id) }}>
+              { deleting && activity.id === target &&
+                <span className="loading loading-spinner loading-xs"></span>}
+              { activity.id !== target && "Delete"}
+            </button>
+            <button className="btn btn-primary" onClick={() => selectActivity(activity.id)}>View</button>
           </div>
         </li>
       ))}
@@ -51,4 +61,4 @@ function ActivityList({ activities, handleSelectActivity, deleteActivity } : pro
   );
 }
 
-export default ActivityList;
+export default observer(ActivityList);
