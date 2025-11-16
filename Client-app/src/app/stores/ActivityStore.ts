@@ -40,43 +40,49 @@ export default class ActivityStore {
         }
     }
 
-    selectActivity = (id: string) => {
-        const activity = this.activityRegistry.get(id);
-        this.selectedActivity = activity;
+    loadActivity = async (id: string) => {
+        let activity = this.getActivity(id);
+        if (activity) this.selectedActivity = activity;
+        else {
+            this.setLoadingInitial(true);
+            try {
+                activity = await agent.activities.details(id);
+                this.formatActivityDate(activity);
+                runInAction(() => {
+                    this.selectedActivity = activity;
+                    if (activity) {
+                        this.activityRegistry.set(activity.id, activity)
+                    }
+                });
+                this.setLoadingInitial(false);
+            } catch (error) {
+                console.log(error);
+                this.setLoadingInitial(false);
+            }
+        }
     }
 
-    cancelSelectActivity = () => {
-        this.selectedActivity = undefined;
-    }
-
-    openForm = (id?: string) => {
-        id ? this.selectActivity(id) : this.cancelSelectActivity();
-        this.editMode = true;
-    }
-
-    closeForm = () => {
-        this.editMode = false;
-    }
+    private formatActivityDate = (activity : Activity) => activity.date = activity.date.split("T")[0];
+    private getActivity = (id: string) =>  this.activityRegistry.get(id);
 
     setSubmitting = (state: boolean) => {
         this.submitting = state;
     }
 
     createActivity = async (activity: Activity) => {
-        activity.id = uuid();
+        if (!activity.id) {
+            activity.id = uuid();
+        }
         this.setSubmitting(true);
         try {
             await agent.activities.create(activity);
             runInAction(() => {
                 this.activityRegistry.set(activity.id, activity);
             })
-            this.selectActivity(activity.id);
             this.setSubmitting(false);
-            this.closeForm();
         } catch (error) {
             console.log(error);
             this.setSubmitting(false);
-            this.closeForm();
         }
     }
 
@@ -87,13 +93,10 @@ export default class ActivityStore {
             runInAction(() => {
                 this.activityRegistry.set(activity.id, activity);
             });
-            this.selectActivity(activity.id); 
             this.setSubmitting(false);
-            this.closeForm();
         } catch (error) {
             console.log(error);
             this.setSubmitting(false);
-            this.closeForm();
         }
     }
 
@@ -108,8 +111,6 @@ export default class ActivityStore {
             runInAction(() => {
                 this.activityRegistry.delete(id);
             });
-            if (this.selectedActivity && this.selectedActivity.id === id)
-                this.cancelSelectActivity();
             this.setDeleting(false);
         } catch (error) {
             console.log(error);

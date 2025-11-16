@@ -1,13 +1,17 @@
-import { useEffect } from 'react'
 import { observer } from 'mobx-react-lite';
 import './App.css'
 
-import { useStore } from '../stores/Store';
 import Navbar from './Navbar';
-import LoadingComponent from './LoadingComponent';
-import { Outlet } from 'react-router';
+import { Outlet, useLocation } from 'react-router';
+import HomePage from '../../features/home/HomePage';
 
 function App() {
+  const location = useLocation();
+
+  if (location.pathname === "/") {
+    return <HomePage/>;
+  }
+
   return (
     <>
       <Navbar />

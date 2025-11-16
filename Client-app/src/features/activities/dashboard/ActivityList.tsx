@@ -2,11 +2,12 @@ import { useState, type SyntheticEvent, } from "react";
 import { observer } from "mobx-react-lite";
 
 import { useStore } from "../../../app/stores/Store";
+import { Link } from "react-router";
 
 function ActivityList() {
   const [target, setTarget] = useState("");
   const {activityStore} = useStore();
-  const { activitiesByDate, deleteActivity, deleting, selectActivity } = activityStore;
+  const { activitiesByDate, deleteActivity, deleting } = activityStore;
 
   function handleDeleteActivity(ev: SyntheticEvent<HTMLButtonElement>, id: string) {
     setTarget(ev.currentTarget.name);
@@ -53,7 +54,7 @@ function ActivityList() {
                 <span className="loading loading-spinner loading-xs"></span>}
               { activity.id !== target && "Delete"}
             </button>
-            <button className="btn btn-primary" onClick={() => selectActivity(activity.id)}>View</button>
+            <Link to={`/Activities/${activity.id}`} className="btn btn-primary">View</Link>
           </div>
         </li>
       ))}

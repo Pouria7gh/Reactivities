@@ -1,14 +1,18 @@
-import { useState, type ChangeEvent } from "react";
+import { useEffect, useState, type ChangeEvent } from "react";
+import { Link, useNavigate, useParams } from "react-router";
 import { observer } from "mobx-react-lite";
+import { v4 as uuid } from "uuid";
 
 import { useStore } from "../../../app/stores/Store";
 import type { Activity } from "../../../app/models/activity";
+import LoadingComponent from "../../../app/layout/LoadingComponent";
 
 function ActivityForm() {
 
   const {activityStore} = useStore()
-
-  const initialData = activityStore.selectedActivity ?? {
+  const {id} = useParams();
+  const navigate = useNavigate()
+  const [activity, setActivity] = useState<Activity>({
     id: "",
     title: "",
     date: "",
@@ -16,9 +20,17 @@ function ActivityForm() {
     category: "",
     city: "",
     venue: "",
-  }
+  });
 
-  const [activity, setActivity] = useState(initialData);
+  useEffect(() => {
+    if(id) {
+      activityStore.loadActivity(id).then(() => {
+        if (activityStore.selectedActivity) {
+          setActivity(activityStore.selectedActivity);
+        }
+      })
+    }
+    }, [id]);
 
   function handleChange(event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) {
     const {name, value} = event.target;
@@ -27,11 +39,14 @@ function ActivityForm() {
 
   function handleSubmit(activity: Activity) {
     if(activity.id) {
-      activityStore.editActivity(activity);
+      activityStore.editActivity(activity).then(() => navigate(`/activities/${activity.id}`));
     } else {
-      activityStore.createActivity(activity);
+      activity.id = uuid();
+      activityStore.createActivity(activity).then(() => navigate(`/activities/${activity.id}`));
     }
   }
+
+  if (activityStore.loadingInitial) return <LoadingComponent />
     
   return (
     <fieldset className="fieldset bg-base-200 border-base-300 rounded-box w-full p-4 inset-ring inset-ring-gray-300 shadow-lg">
@@ -103,9 +118,9 @@ function ActivityForm() {
       />
 
       <div className="flex justify-end">
-        <button className="btn btn-error me-2" onClick={activityStore.closeForm}>
+        <Link to={id ? `/Activities/${id}` : "/Activities"} className="btn btn-error me-2">
           Cancel
-        </button>
+        </Link>
         <button className="btn btn-success" onClick={() => handleSubmit(activity)}>
           {activityStore.submitting &&
           <span className="loading loading-spinner loading-xs"></span>}
