@@ -24,7 +24,7 @@ function Navbar() {
 
         <NavLink
           to="/CreateActivity"
-          className={({ isActive }) => `btn btn-success ${
+          className={({ isActive }) => `btn btn-accent ${
             isActive ? "btn-active text-white" : ""
           }
             hover:text-black text-base me-3`}

@@ -3,9 +3,9 @@ import { Link, useNavigate, useParams } from "react-router";
 import { observer } from "mobx-react-lite";
 import { v4 as uuid } from "uuid";
 
-import { useStore } from "../../../app/stores/Store";
-import type { Activity } from "../../../app/models/activity";
-import LoadingComponent from "../../../app/layout/LoadingComponent";
+import { useStore } from "../../../stores/Store";
+import type { Activity } from "../../../models/activity";
+import LoadingComponent from "../../../layout/LoadingComponent";
 
 function ActivityForm() {
 
