@@ -2,6 +2,8 @@ using Application.Activities;
 using Application.Core;
 using Microsoft.EntityFrameworkCore;
 using Presistence;
+using FluentValidation;
+using Application.Common;
 
 namespace API.Extensions;
 
@@ -13,7 +15,6 @@ public static class ApplicationServiceExtensions
         {
             options.UseSqlServer(config.GetConnectionString("Default"));
         });
-
         services.AddCors(options =>
         {
             options.AddPolicy("CorsPolicy", policy =>
@@ -21,11 +22,13 @@ public static class ApplicationServiceExtensions
                 policy.AllowAnyMethod().AllowAnyHeader().WithOrigins("http://localhost:3000");
             });
         });
-
-        services.AddMediatR(config => config.RegisterServicesFromAssembly(typeof(List).Assembly));
-
+        services.AddValidatorsFromAssembly(typeof(Edit.Validator).Assembly);
+        services.AddMediatR(config =>
+        {
+            config.RegisterServicesFromAssembly(typeof(List).Assembly);
+            config.AddOpenBehavior(typeof(ValidationBehavior<,>));
+        });
         services.AddAutoMapper(typeof(MappingProfiles).Assembly);
-
         services.AddSwaggerGen();
 
         return services;

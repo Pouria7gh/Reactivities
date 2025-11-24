@@ -1,5 +1,9 @@
-import axios, { type AxiosResponse } from "axios";
+import axios, { AxiosError, type AxiosResponse } from "axios";
 import type { Activity } from "../models/activity";
+import toast from "react-hot-toast";
+import Routes from "../router/Routes";
+import { store } from "../stores/Store";
+import type { ServerError } from "../models/ServerError";
 
 axios.defaults.baseURL = "http://localhost:5000/api";
 
@@ -10,14 +14,35 @@ const sleep = (delay : number) => {
 }
 
 axios.interceptors.response.use(async response => {
-    try {
-        await sleep(1000);
-        return response;
-    } catch (error) {
-        console.log(error);
-        return await Promise.reject(error);
+    await sleep(1000);
+    return response;
+}, (error : AxiosError) => {
+    if (!error.response)
+        return;
+    const { data, status, config } = error.response as AxiosResponse;
+    
+    switch (status) {
+        case 400 :
+            if (config.method == 'get' && data.errors.hasOwnProperty('id')) {
+                Routes.navigate('/not-found');
+            } else {
+                toast.error("Error 400 Bad Request");
+            }
+            break;
+        case 401 :
+            toast.error("Error 401 Unauthorized");
+            break;
+        case 404 :
+            Routes.navigate("/not-found");
+            break;
+        case 500 :
+            store.commonStore.setServerError(data as ServerError);
+            Routes.navigate("/server-error");
+            break;
     }
-})
+
+    Promise.reject(error);
+});
 
 const responseBody = <T> (response: AxiosResponse<T>) => response.data;
 

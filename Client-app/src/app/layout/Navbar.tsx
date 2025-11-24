@@ -24,12 +24,20 @@ function Navbar() {
 
         <NavLink
           to="/CreateActivity"
-          className={({ isActive }) => `btn btn-accent ${
-            isActive ? "btn-active text-white" : ""
-          }
-            hover:text-black text-base me-3`}
+          className={({ isActive }) => `btn btn-ghost me-3 text-base hover:text-black ${
+            isActive ? "btn-active text-black" : "text-white"
+          }`}
         >
           Create Activity
+        </NavLink>
+
+        <NavLink
+          to="/Errors"
+          className={({ isActive }) => `btn btn-ghost me-3 text-base hover:text-black ${
+            isActive ? "btn-active text-black" : "text-white"
+          }`}
+        >
+          Errors
         </NavLink>
       </div>
     </div>

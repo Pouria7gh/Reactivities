@@ -4,6 +4,7 @@ import './App.css'
 import Navbar from './Navbar';
 import { Outlet, useLocation } from 'react-router';
 import HomePage from '../features/home/HomePage';
+import { Toaster } from 'react-hot-toast';
 
 function App() {
   const location = useLocation();
@@ -14,6 +15,7 @@ function App() {
 
   return (
     <>
+      <Toaster position="bottom-right"/>
       <Navbar />
       <Outlet />
     </>
