@@ -1,6 +1,7 @@
 import { Link } from "react-router"
 import type { Activity } from "../../../models/activity"
 import { useState, type SyntheticEvent } from "react";
+import { format } from 'date-fns';
 
 import { useStore } from "../../../stores/Store";
 import { CiCalendarDate, CiLocationOn } from "react-icons/ci";
@@ -30,7 +31,7 @@ function ActivityListItem({ activity }: props) {
             </div>
         </div>
         <div className="flex justify-start">
-            <span className="me-3"><CiCalendarDate className="inline text-lg text-indigo-800" /> {activity.date}</span>
+            <span className="me-3"><CiCalendarDate className="inline text-lg text-indigo-800" /> {format(activity.date!, "dd MMM yyyy h:mm aa")}</span>
             <span><CiLocationOn className="inline-block text-lg text-indigo-800" /> {activity.city}, {activity.venue}</span>
         </div>
         <div>

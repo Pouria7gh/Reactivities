@@ -1,24 +1,27 @@
-import { useEffect, useState, type ChangeEvent } from "react";
+import { useEffect, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router";
 import { observer } from "mobx-react-lite";
-import { v4 as uuid } from "uuid";
-
+import { Form, Formik } from 'formik';
+import * as Yup from 'yup';
+import { v4 as uuid } from 'uuid';
 
 import { useStore } from "../../../stores/Store";
 import type { Activity } from "../../../models/activity";
 import LoadingComponent from "../../../layout/LoadingComponent";
-import AppDatePicker from "./AppDatePicker";
+import AppTextInput from "../../../common/forms/AppTextInput";
+import AppTextarea from "../../../common/forms/AppTextarea";
+import AppSelect from "../../../common/forms/AppSelect";
+import { categoryOptions } from "../../../common/options/categoryOptions";
+import AppDateInput from "../../../common/forms/AppDateInput";
 
 function ActivityForm() {
-
+  const navigate = useNavigate();
   const {activityStore} = useStore()
   const {id} = useParams();
-  const [date, setDate] = useState<string>("");
-  const navigate = useNavigate()
   const [activity, setActivity] = useState<Activity>({
     id: "",
     title: "",
-    date: "",
+    date: null,
     description: "",
     category: "",
     city: "",
@@ -33,15 +36,9 @@ function ActivityForm() {
         }
       })
     }
-    }, [id]);
+  }, [id]);
 
-  function handleChange(event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) {
-    const {name, value} = event.target;
-    setActivity({...activity, [name]: value});
-  }
-
-  function handleSubmit(activity: Activity) {
-    activity.date = date;
+  function handleFormSubmit(activity: Activity) {
     if(activity.id) {
       activityStore.editActivity(activity).then(() => navigate(`/activities/${activity.id}`));
     } else {
@@ -51,80 +48,52 @@ function ActivityForm() {
   }
 
   if (activityStore.loadingInitial) return <LoadingComponent />
+
+  var validation = Yup.object({
+    title: Yup.string().required(),
+    date: Yup.string().required(),
+    description: Yup.string().required(),
+    category: Yup.string().required(),
+    city: Yup.string().required(),
+    venue: Yup.string().required(),
+  });
     
   return (
     <div className="container mx-auto grid grid-cols-12">
-      <div className="col-span-8 col-start-3">
-        <fieldset className="fieldset bg-base-200 border-base-300 rounded-box w-full p-4 inset-ring inset-ring-gray-300 shadow-lg">
-          <legend className="fieldset-legend">Edit Activity</legend>
-          <label className="label">Title</label>
-          <input
-            type="text"
-            className="input w-full"
-            value={activity.title}
-            name="title"
-            onChange={handleChange}
-            placeholder="Title ..."
-            autoComplete="false"
-          />
-          <div className="flex gap-2">
-            <div className="grow">
-              <label className="label block mb-1">Category</label>
-              <input
-                type="text"
-                className="input w-full"
-                value={activity.category}
-                name="category"
-                onChange={handleChange}
-                placeholder="Category ..."
-                autoComplete="false"
+      <div className="col-span-8 col-start-3 shadow-lg p-5 my-5 bg-base-200 inset-ring inset-ring-gray-300 rounded">
+        <Formik enableReinitialize validationSchema={validation} initialValues={activity} onSubmit={handleFormSubmit}>
+          {({dirty , isSubmitting, isValid}) => (
+            <Form>
+              <AppTextInput name="title" label="Title" placeholder="title" />
+              <AppDateInput
+                name="date"
+                label="Date"
+                placeholderText="Date"
+                timeCaption="time"
+                showTimeSelect
+                dateFormat="MMMM d, yyyy h:mm aa"
               />
-            </div>
-            <div className="grow">
-              <label className="label block mb-1">Date</label>
-              <AppDatePicker onChange={setDate} selected={activity.date}/>
-            </div>
-          </div>
-          <label className="label">Description</label>
-          <textarea
-            className="textarea w-full"
-            placeholder="Description"
-            value={activity.description}
-            name="description"
-            onChange={handleChange}
-            autoComplete="false"
-          ></textarea>
-          <label className="label">City</label>
-          <input
-            type="text"
-            className="input w-full"
-            value={activity.city}
-            name="city"
-            onChange={handleChange}
-            placeholder="City ..."
-            autoComplete="false"
-          />
-          <label className="label">Venue</label>
-          <input
-            type="text"
-            className="input w-full"
-            value={activity.venue}
-            name="venue"
-            onChange={handleChange}
-            placeholder="Venue ..."
-            autoComplete="false"
-          />
-          <div className="flex justify-end">
-            <Link to={id ? `/Activities/${id}` : "/Activities"} className="btn btn-error me-2">
-              Cancel
-            </Link>
-            <button className="btn btn-success" onClick={() => handleSubmit(activity)}>
-              {activityStore.submitting &&
-              <span className="loading loading-spinner loading-xs"></span>}
-              {!activityStore.submitting && "submit"}
-            </button>
-          </div>
-        </fieldset>
+              <AppTextarea rows={3} name="description" label="Description" placeholder="description" />
+              <AppSelect options={categoryOptions} placeholder="Select Category" name="category" label="Category" />
+              <AppTextInput name="city" label="Enter city" placeholder="City" />
+              <AppTextInput name="venue" label="Enter venue" placeholder="Venue" />
+              <button
+                type="submit"
+                className="btn btn-primary mt-2 me-2"
+                disabled={!dirty || !isValid || isSubmitting}
+              >
+                {isSubmitting && <span className="loading loading-sm text-primary"></span>}
+                {!isSubmitting && "Submit"}
+              </button>
+              <Link
+                to={id ? `/Activities/${id}` : '/Activities'}
+                className="btn btn-error mt-2"
+              >
+                Cancel
+              </Link>
+            </Form>
+          )}
+        </Formik>
       </div>
     </div>
   );

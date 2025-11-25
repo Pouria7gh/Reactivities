@@ -1,4 +1,4 @@
-import { DayPicker } from "react-day-picker"
+
 import { FaFilter } from "react-icons/fa";
 
 function ActivityFilters() {
@@ -15,7 +15,6 @@ function ActivityFilters() {
         <div className="text-sm">I'm hosting</div>
       </div>
       <div className="w-full flex justify-center">
-        <DayPicker className="react-day-picker inset-ring inset-ring-gray-300 shadow-lg object-fit" mode="range" />
       </div>
     </>
   );

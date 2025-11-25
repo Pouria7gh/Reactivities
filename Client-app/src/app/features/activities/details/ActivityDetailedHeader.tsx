@@ -1,4 +1,5 @@
 import { Link } from "react-router";
+import { format } from 'date-fns';
 
 import type { Activity } from "../../../models/activity";
 
@@ -18,7 +19,7 @@ function ActivityDetailedHeader({ activity }: props) {
       </figure>
       <div className="card-body self-end gap-0 pb-3">
         <h2 className="card-title text-2xl">{ activity.title }</h2>
-        <p className="mb-2">{ activity.date }</p>
+        <p className="mb-2">{ format(activity.date!, "dd MMM yyyy") }</p>
         <p>Hosted by Bob</p>
       </div>
     </div>

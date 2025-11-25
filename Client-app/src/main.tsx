@@ -1,5 +1,6 @@
 import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
+import 'react-datepicker/dist/react-datepicker.css'
 import './app/layout/index.css'
 import './app/layout/App.css'
 import { store, StoreContext } from './app/stores/Store.ts'

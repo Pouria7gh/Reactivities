@@ -1,4 +1,4 @@
-import { Link, useParams } from "react-router";
+import { useParams } from "react-router";
 import { useStore } from "../../../stores/Store";
 import { useEffect } from "react";
 import { observer } from "mobx-react-lite";
