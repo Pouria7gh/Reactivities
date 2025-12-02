@@ -1,5 +1,5 @@
 import { Link } from "react-router"
-import type { Activity } from "../../../models/activity"
+import type { Activity } from "../../../models/Activity"
 import { useState, type SyntheticEvent } from "react";
 import { format } from 'date-fns';
 

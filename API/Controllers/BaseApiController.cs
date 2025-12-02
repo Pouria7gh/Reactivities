@@ -1,4 +1,6 @@
+using API.Extensions;
 using Application.Core;
+using FluentValidation;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 
@@ -12,6 +14,8 @@ public class BaseApiController : ControllerBase
     protected IMediator Mediator => _mediator ??= HttpContext.RequestServices.GetService<IMediator>();
     protected IActionResult HandleResult<T>(Result<T> result)
     {
+        if (!ModelState.IsValid)
+            return ValidationProblem();
         if (result == null)
             return NotFound();
         if (result.IsSuccess && result.Value != null)
@@ -19,5 +23,10 @@ public class BaseApiController : ControllerBase
         if (result.IsSuccess && result.Value == null)
             return NotFound();
         return BadRequest(result.Error);
+    }
+
+    protected async Task<TResult> Send<TResult>(IRequest<TResult> request)
+    {
+        return await Mediator.TrySend(request, ModelState);
     }
 }

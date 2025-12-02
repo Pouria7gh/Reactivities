@@ -18,7 +18,7 @@ function ActivitiyDashboard() {
   return (
     <div className='container mx-auto px-2 grid grid-cols-18 gap-5'>
       
-      {activityStore.loadingInitial && <LoadingComponent />}
+      {activityStore.loadingInitial && <LoadingComponent text='Loading Activities...' />}
       
       <div className="col-span-12">
         <ActivityList />

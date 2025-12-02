@@ -1,9 +1,12 @@
 import { useField } from "formik"
+import { cloneElement, type ReactElement } from "react";
 
 interface props {
   name: string;
   placeholder?: string;
   label?: string;
+  type?: string;
+  icon?: any;
 }
 
 function AppTextInput(props: props) {
@@ -14,7 +17,24 @@ function AppTextInput(props: props) {
         {props.label && 
           <legend className="fieldset-legend">{props.label}</legend>
         }
-        <input type="text" {...field} {...props} className={`input w-full ${meta.error && meta.touched ? "input-error" : ""}`} placeholder={props.placeholder} />
+        <label
+          className={`input w-full 
+            ${meta.error && meta.touched ? "input-error" : ""}
+            ${!props.icon ? "px-0" : "pe-0"}
+          `}
+        >
+          {props.icon &&
+            cloneElement(props.icon, {
+              className: "text-blue-600"
+            })}
+          <input
+            {...field}
+            {...props}
+            placeholder={props.placeholder}
+            autoComplete="off"
+            className={!props.icon ? "px-3" : "px-1"}
+          />
+        </label>
         {meta.error && meta.touched &&
         <p className="label text-error">{meta.error}</p>}
     </fieldset>

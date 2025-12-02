@@ -1,9 +1,10 @@
 import axios, { AxiosError, type AxiosResponse } from "axios";
-import type { Activity } from "../models/activity";
+import type { Activity } from "../models/Activity";
 import toast from "react-hot-toast";
 import Routes from "../router/Routes";
 import { store } from "../stores/Store";
 import type { ServerError } from "../models/ServerError";
+import { type User, type UserFormValues } from "../models/User";
 
 axios.defaults.baseURL = "http://localhost:5000/api";
 
@@ -13,12 +14,18 @@ const sleep = (delay : number) => {
     })
 }
 
+axios.interceptors.request.use(async request => {
+    var token = store.commonStore.token;
+    if (token) request.headers.Authorization = `Bearer ${token}`;
+    return request;
+})
+
 axios.interceptors.response.use(async response => {
     await sleep(1000);
     return response;
 }, (error : AxiosError) => {
     if (!error.response)
-        return;
+        return Promise.reject(error);
     const { data, status, config } = error.response as AxiosResponse;
     
     switch (status) {
@@ -26,11 +33,11 @@ axios.interceptors.response.use(async response => {
             if (config.method == 'get' && data.errors.hasOwnProperty('id')) {
                 Routes.navigate('/not-found');
             } else {
-                toast.error("Error 400 Bad Request");
+                toast.error("Bad Request");
             }
             break;
         case 401 :
-            toast.error("Error 401 Unauthorized");
+            toast.error("Unauthorized");
             break;
         case 404 :
             Routes.navigate("/not-found");
@@ -41,7 +48,7 @@ axios.interceptors.response.use(async response => {
             break;
     }
 
-    Promise.reject(error);
+    return Promise.reject(error);
 });
 
 const responseBody = <T> (response: AxiosResponse<T>) => response.data;
@@ -61,8 +68,15 @@ const activities = {
     delete: (id: string) => requests.delete<void>(`activities/${id}`)
 }
 
+const account = {
+    current: () => requests.get<User>('/account'),
+    register: (user: UserFormValues) => requests.post<User>('/account/register', user),
+    login: (user: UserFormValues) => requests.post<User>('/account/login', user)
+}
+
 const agent = {
     activities,
+    account
 }
 
 export default agent;

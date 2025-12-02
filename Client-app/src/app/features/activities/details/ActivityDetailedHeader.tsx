@@ -1,7 +1,7 @@
 import { Link } from "react-router";
 import { format } from 'date-fns';
 
-import type { Activity } from "../../../models/activity";
+import type { Activity } from "../../../models/Activity";
 
 interface props {
     activity: Activity

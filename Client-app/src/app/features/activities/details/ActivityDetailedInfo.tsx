@@ -2,7 +2,7 @@ import { IoIosInformationCircleOutline } from "react-icons/io"
 import { CiCalendarDate, CiLocationOn } from "react-icons/ci"
 import { format } from 'date-fns';
 
-import type { Activity } from "../../../models/activity"
+import type { Activity } from "../../../models/Activity"
 
 interface props {
     activity: Activity

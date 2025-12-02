@@ -9,7 +9,6 @@ using Microsoft.EntityFrameworkCore;
 
 namespace API.Controllers;
 
-[AllowAnonymous]
 [ApiController]
 [Route("api/[controller]")]
 public class AccountController : ControllerBase
@@ -22,6 +21,7 @@ public class AccountController : ControllerBase
         _userManager = userManager;
     }
 
+    [AllowAnonymous]
     [HttpPost("login")]
     public async Task<ActionResult<UserDto>> Login(LoginDto loginDto)
     {
@@ -36,17 +36,20 @@ public class AccountController : ControllerBase
         return CreateUserDto(user);
     }
 
+    [AllowAnonymous]
     [HttpPost("register")]
     public async Task<ActionResult<UserDto>> Register(RegisterDto registerDto)
     {
         if (await _userManager.Users.AnyAsync(x => x.UserName == registerDto.Username))
         {
-            return BadRequest("Username already exists");
+            ModelState.AddModelError("username", "Username already exists");
+            return ValidationProblem();
         }
 
         if (await _userManager.Users.AnyAsync(x => x.Email == registerDto.Email))
         {
-            return BadRequest("Email already exists");
+            ModelState.AddModelError("email", "Email already exists");
+            return ValidationProblem();
         }
 
         var user = new AppUser

@@ -6,13 +6,14 @@ import * as Yup from 'yup';
 import { v4 as uuid } from 'uuid';
 
 import { useStore } from "../../../stores/Store";
-import type { Activity } from "../../../models/activity";
+import type { Activity } from "../../../models/Activity";
 import LoadingComponent from "../../../layout/LoadingComponent";
 import AppTextInput from "../../../common/forms/AppTextInput";
 import AppTextarea from "../../../common/forms/AppTextarea";
 import AppSelect from "../../../common/forms/AppSelect";
 import { categoryOptions } from "../../../common/options/categoryOptions";
 import AppDateInput from "../../../common/forms/AppDateInput";
+import AppSubmitButton from "../../../common/forms/AppSubmitButton";
 
 function ActivityForm() {
   const navigate = useNavigate();
@@ -77,14 +78,7 @@ function ActivityForm() {
               <AppSelect options={categoryOptions} placeholder="Select Category" name="category" label="Category" />
               <AppTextInput name="city" label="Enter city" placeholder="City" />
               <AppTextInput name="venue" label="Enter venue" placeholder="Venue" />
-              <button
-                type="submit"
-                className="btn btn-primary mt-2 me-2"
-                disabled={!dirty || !isValid || isSubmitting}
-              >
-                {isSubmitting && <span className="loading loading-sm text-primary"></span>}
-                {!isSubmitting && "Submit"}
-              </button>
+              <AppSubmitButton text="Create" dirty={dirty} isValid={isValid} isSubmitting={isSubmitting} className="mt-2 me-2"/>
               <Link
                 to={id ? `/Activities/${id}` : '/Activities'}
                 className="btn btn-error mt-2"

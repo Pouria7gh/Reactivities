@@ -22,7 +22,7 @@ function AppDateInput(props: props) {
         onChange={value => helpers.setValue(value)}
         selected={field.value}
         autoComplete="off"
-        className={`input w-full ${meta.error ? 'input-error' : ''}`}
+        className={`input w-full ${meta.error && meta.touched ? 'input-error' : ''}`}
         placeholderText={props.placeholderText}
         showTimeSelect={props.showTimeSelect}
         timeCaption={props.timeCaption}

@@ -1,4 +1,3 @@
-using API.Exceptions;
 using API.Extensions;
 using API.Middlewares;
 using Domain;
@@ -24,7 +23,6 @@ builder.Services.AddIdentityServices(builder.Configuration);
 var app = builder.Build();
 
 app.UseMiddleware<ExceptionMiddleware>();
-app.UseMiddleware<ValidationErrorHandlingMiddleware>();
 
 using var scope = app.Services.CreateScope();
 var services = scope.ServiceProvider;
