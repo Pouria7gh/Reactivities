@@ -4,6 +4,8 @@ using Microsoft.EntityFrameworkCore;
 using Presistence;
 using FluentValidation;
 using Application.Common;
+using Application.Interfaces;
+using Infrastructure.Security;
 
 namespace API.Extensions;
 
@@ -30,6 +32,8 @@ public static class ApplicationServiceExtensions
         });
         services.AddAutoMapper(typeof(MappingProfiles).Assembly);
         services.AddSwaggerGen();
+        services.AddHttpContextAccessor();
+        services.AddScoped<IUserAccessor, UserAccessor>();
 
         return services;
     }
