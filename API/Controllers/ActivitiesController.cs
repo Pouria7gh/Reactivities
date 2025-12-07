@@ -1,6 +1,5 @@
 using Application.Activities;
 using Domain;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace API.Controllers;
@@ -36,5 +35,11 @@ public class ActivitiesController : BaseApiController
     public async Task<IActionResult> DeleteActivity(Guid id)
     {
         return HandleResult(await Send(new Delete.Command { Id = id }));
+    }
+
+    [HttpPost("{id}/attend")]
+    public async Task<IActionResult> Attende(Guid id)
+    {
+        return HandleResult(await Send(new UpdateAttendance.Command {Id = id}));
     }
 }

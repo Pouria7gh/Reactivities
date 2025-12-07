@@ -1,6 +1,5 @@
 using API.Extensions;
 using Application.Core;
-using FluentValidation;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 
