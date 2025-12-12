@@ -1,5 +1,5 @@
 import axios, { AxiosError, type AxiosResponse } from "axios";
-import type { Activity } from "../models/Activity";
+import type { Activity, ActivityFormValues } from "../models/Activity";
 import toast from "react-hot-toast";
 import Routes from "../router/Routes";
 import { store } from "../stores/Store";
@@ -38,6 +38,7 @@ axios.interceptors.response.use(async response => {
             break;
         case 401 :
             toast.error("Unauthorized");
+            Routes.navigate("/");
             break;
         case 404 :
             Routes.navigate("/not-found");
@@ -63,9 +64,10 @@ const requests = {
 const activities = {
     list: () => requests.get<Activity[]>("activities"),
     details: (id: string) => requests.get<Activity>(`activities/${id}`),
-    create: (activity: Activity) => requests.post<void>("activities", activity),
-    update: (activity: Activity) => requests.put<void>(`activities/${activity.id}`, activity),
-    delete: (id: string) => requests.delete<void>(`activities/${id}`)
+    create: (activity: ActivityFormValues) => requests.post<void>("activities", activity),
+    update: (activity: ActivityFormValues) => requests.put<void>(`activities/${activity.id}`, activity),
+    delete: (id: string) => requests.delete<void>(`activities/${id}`),
+    attend: (id: string) => requests.post<void>(`activities/${id}/attend`, {})
 }
 
 const account = {

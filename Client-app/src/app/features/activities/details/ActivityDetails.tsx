@@ -29,7 +29,7 @@ function Details() {
         <ActivityDetailedChat />
       </div>
       <div className="col-span-6">
-        <ActivityDetailedSideBar />
+        <ActivityDetailedSideBar activity={selectedActivity} />
       </div>
     </div>
   );
