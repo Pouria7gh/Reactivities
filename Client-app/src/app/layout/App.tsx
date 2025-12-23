@@ -8,6 +8,7 @@ import { useStore } from '../stores/Store';
 import { useEffect } from 'react';
 import LoadingComponent from './LoadingComponent';
 import AppModal from '../common/modal/AppModal';
+import { isAxiosError } from 'axios';
 
 function App() {
   const location = useLocation();
@@ -15,7 +16,16 @@ function App() {
 
   useEffect(() => {
     if (commonStore.token) {
-      userStore.getUser().finally(() => commonStore.setAppLoaded());
+      userStore.getUser().catch(error => {
+        
+        if (!isAxiosError(error)) 
+          return;
+
+        // remove token if it is wrong
+        if (error.response?.status == 401)
+          commonStore.token = null;
+        
+      }).finally(() => commonStore.setAppLoaded());
     } else {
       commonStore.setAppLoaded();
     }

@@ -51,12 +51,13 @@ function Navbar() {
             alt="user"
             className="rounded-full w-10"
           />
-          <button className="btn btn-link p-0 ps-2 text-white hover:text-gray-300" popoverTarget="profile-dropdown" style={{ anchorName: "--profile-anchor" } as CSSProperties}>
+          <button className="btn btn-link p-0 ps-2 text-white hover:text-gray-300" popoverTarget="profile-dropdown" 
+            style={{ anchorName: "--profile-anchor" } as CSSProperties}>
             {user?.displayName}
           </button>
           <ul className="dropdown dropdown-end mt-1 menu w-52 rounded-box bg-base-100 shadow-sm"
             popover="auto" id="profile-dropdown" style={{ positionAnchor: "--profile-anchor" } as CSSProperties}>
-            <li><Link to={`/Profile/${user?.username}`}>Profile</Link></li>
+            <li><Link to={`/Profiles/${user?.username}`}>Profile</Link></li>
             <li className="text-error"><Link to="/" onClick={logout}>Logout</Link></li>
           </ul>
         </div>}

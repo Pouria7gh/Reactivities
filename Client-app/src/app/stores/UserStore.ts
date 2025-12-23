@@ -51,7 +51,7 @@ export default class UserStore {
             const user = await agent.account.current();
             runInAction(() => this.user = user);
         } catch (error) {
-            console.log(error);
+            throw error;
         }
     }
 }

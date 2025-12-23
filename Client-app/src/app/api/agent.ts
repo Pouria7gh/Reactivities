@@ -5,6 +5,7 @@ import Routes from "../router/Routes";
 import { store } from "../stores/Store";
 import type { ServerError } from "../models/ServerError";
 import { type User, type UserFormValues } from "../models/User";
+import { Profile } from "../models/Profile";
 
 axios.defaults.baseURL = "http://localhost:5000/api";
 
@@ -76,9 +77,14 @@ const account = {
     login: (user: UserFormValues) => requests.post<User>('/account/login', user)
 }
 
+const profile = {
+    get: (username: string) => requests.get<Profile>(`/profiles/${username}`)
+}
+
 const agent = {
+    account,
     activities,
-    account
+    profile
 }
 
 export default agent;

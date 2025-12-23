@@ -18,7 +18,7 @@ function ActivityListItem({ activity }: props) {
       <div className="card-body">
         <div className="flex">
           <img
-            src="/assets/user.png"
+            src={activity.host?.image || "/assets/user.png" }
             alt="User"
             className="w-15 rounded-full me-4"
           />

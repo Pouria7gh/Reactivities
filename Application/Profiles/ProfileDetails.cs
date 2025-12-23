@@ -37,9 +37,6 @@ public class ProfileDetails
         }
         public async Task<Result<Profile>> Handle(Query request, CancellationToken cancellationToken)
         {
-            if (request.Username != _userAccessor.GetUserName())
-                return Result<Profile>.Failure("Problem getting profile.");
-
             var user = await _dataContext.Users
                 .Include(x => x.Photos)
                 .ProjectTo<Profile>(_mapper.ConfigurationProvider)
