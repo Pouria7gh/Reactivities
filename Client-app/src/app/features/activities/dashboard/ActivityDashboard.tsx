@@ -16,7 +16,7 @@ function ActivitiyDashboard() {
   }, []);
 
   return (
-    <div className='container mx-auto px-2 grid grid-cols-18 gap-5'>
+    <div className='container mx-auto px-4 grid grid-cols-18 gap-5'>
       
       {activityStore.loadingInitial && <LoadingComponent text='Loading Activities...' />}
       

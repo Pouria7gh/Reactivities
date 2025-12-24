@@ -22,7 +22,7 @@ function Details() {
     return <LoadingComponent/>;
 
   return (
-    <div className="grid grid-cols-16 gap-5 container mx-auto mt-3">
+    <div className="grid p-4 grid-cols-16 gap-5 container mx-auto mt-3">
       <div className="col-span-10">
         <ActivityDetailedHeader activity={selectedActivity} />
         <ActivityDetailedInfo activity={selectedActivity} />

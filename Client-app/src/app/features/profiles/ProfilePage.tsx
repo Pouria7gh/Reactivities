@@ -23,7 +23,7 @@ function ProfilePage() {
   if (!profile) return null;
 
   return (
-    <div className="container mx-auto pt-4">
+    <div className="container mx-auto pt-4 px-4">
       <ProfileHeader profile={profile!} />
       <ProfileContent />
     </div>

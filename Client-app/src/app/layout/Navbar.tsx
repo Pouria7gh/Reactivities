@@ -7,8 +7,11 @@ function Navbar() {
   const {userStore: {user, logout, isLoggedIn}} = useStore();
 
   return (
-    <div className="navbar bg-gradient-to-r from-blue-800 to-blue-300 shadow-sm">
-      <div className="container flex mx-auto items-center px-2">
+    <div 
+      className="navbar shadow-sm"
+      style={{background: "linear-gradient(to right, #1e40af, #60a5fa)"}}
+    >
+      <div className="container flex mx-auto items-center px-4">
         <NavLink className="flex me-5 md:me-12 lg:me-15 xl:me-20" to="/">
           <img src="/assets/logo.png" width={40} className="me-2" alt="logo" />
           <span className="inline-block self-center text-xl text-white">
