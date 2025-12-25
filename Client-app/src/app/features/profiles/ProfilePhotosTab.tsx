@@ -3,6 +3,7 @@ import type Photo from "../../models/Photo";
 import { IoMdPhotos } from "react-icons/io";
 import { useStore } from "../../stores/Store";
 import { useState } from "react";
+import PhotoUploadWidget from "../../common/photoUpload/PhotoUploadWidget";
 
 interface Props {
   photos: Photo[] | undefined;
@@ -40,11 +41,7 @@ function ProfilePhotosTab({ photos }: Props) {
       ))}
 
       {editMode && (
-        <>
-        <div className="col-span-4">drop photo</div>
-        <div className="col-span-4">crop photo</div>
-        <div className="col-span-4">upload photo</div>
-        </>
+        <PhotoUploadWidget className="col-span-12" />
       )}
     </div>
   );
