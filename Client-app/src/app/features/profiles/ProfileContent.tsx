@@ -1,6 +1,6 @@
 import { observer } from "mobx-react-lite";
 import { useState } from "react";
-import ProfilePhotoTabContent from "./ProfilePhotosTabContent";
+import ProfilePhotoTabContent from "./ProfilePhotosTab";
 import { useStore } from "../../stores/Store";
 import type ProfileStore from "../../stores/ProfileStore";
 

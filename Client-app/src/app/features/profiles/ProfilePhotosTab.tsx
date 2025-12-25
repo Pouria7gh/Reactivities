@@ -7,7 +7,7 @@ interface Props {
   photos: Photo[] | undefined;
 }
 
-function ProfilePhotosTabContent({ photos }: Props) {
+function ProfilePhotosTab({ photos }: Props) {
   const { profileStore } = useStore();
   if (!photos || photos?.length === 0)
     return (
@@ -36,4 +36,4 @@ function ProfilePhotosTabContent({ photos }: Props) {
   );
 }
 
-export default observer(ProfilePhotosTabContent);
+export default observer(ProfilePhotosTab);
