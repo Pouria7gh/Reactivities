@@ -20,7 +20,7 @@ function PhotoWidgetDropzone({setFile}: props) {
 
   return (
     <div
-        className={`p-2 text-center border-2 border-dotted rounded-lg h-25
+        className={`flex flex-col gap-5 justify-center items-center border-2 border-dotted rounded-lg h-60
             ${isDragActive ? "border-blue-500 text-blue-500" : "border-gray-500"}`}
         {...getRootProps()}
     >
