@@ -41,7 +41,7 @@ function ProfilePhotosTab({ photos }: Props) {
       ))}
 
       {editMode && (
-        <PhotoUploadWidget className="col-span-12" />
+        <PhotoUploadWidget setEditMode={setEditMode} className="col-span-12" />
       )}
     </div>
   );

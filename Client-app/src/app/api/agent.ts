@@ -6,6 +6,7 @@ import { store } from "../stores/Store";
 import type { ServerError } from "../models/ServerError";
 import { type User, type UserFormValues } from "../models/User";
 import { Profile } from "../models/Profile";
+import type Photo from "../models/Photo";
 
 axios.defaults.baseURL = "http://localhost:5000/api";
 
@@ -81,9 +82,23 @@ const profile = {
     get: (username: string) => requests.get<Profile>(`/profiles/${username}`)
 }
 
+const photos = {
+    add: async (photo: Blob) => {
+        let formData = new FormData();
+        formData.append("photo", photo);
+        const response = await axios.post<Photo>("/Photos", formData, {
+            headers: {"Content-Type": "multipart/form-data"}
+        });
+        return response.data;
+    },
+    remove: (photoId: string) => requests.delete<void>(`/Photos/${photoId}`),
+    setMainPhoto: (photoId: string) => requests.post<void>(`/Photos/${photoId}`, {})
+}
+
 const agent = {
     account,
     activities,
+    photos,
     profile
 }
 
