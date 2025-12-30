@@ -1,4 +1,4 @@
-import type { Profile } from "./Profile"
+import type { ActivityAttendee } from "./ActivityAttendee"
 
 export interface Activity {
   id: string
@@ -12,8 +12,8 @@ export interface Activity {
   isCancelled: boolean;
   isGoing: boolean;
   isHost: boolean;
-  host?: Profile;
-  attendees: Profile[];
+  host?: ActivityAttendee;
+  attendees: ActivityAttendee[];
 }
 
 export class Activity implements Activity {
