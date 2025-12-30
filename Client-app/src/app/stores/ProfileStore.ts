@@ -2,11 +2,14 @@ import { makeAutoObservable, runInAction } from "mobx";
 import type { Profile } from "../models/Profile";
 import agent from "../api/agent";
 import { store } from "./Store";
+import type Photo from "../models/Photo";
 
 export default class ProfileStore {
     loadingProfile: boolean = false;
     profile: Profile | null = null;
     uploading = false;
+    setMainPhotoLoading = false;
+    deletePhotoLoading = false;
 
     constructor() {
         makeAutoObservable(this);        
@@ -63,6 +66,36 @@ export default class ProfileStore {
         } catch (error) {
             console.log(error);
             runInAction(() => this.uploading = false);
+        }
+    }
+
+    setMainPhoto = async (photo: Photo) => {
+        this.setMainPhotoLoading = true;
+        try {
+            await agent.photos.setMainPhoto(photo.id);
+            store.userStore.setUserImage(photo.url);
+            runInAction(() => {
+                this.profile!.image = photo.url;
+                this.profile!.photos!.find(p => p.isMain)!.isMain = false;
+                this.profile!.photos!.find(p => p.id == photo.id)!.isMain = true;
+                this.setMainPhotoLoading = false;
+            })
+            if (this.profile && store.activityStore.activityRegistry.size) {
+                store.activityStore.updateAttendeeImage(this.profile);
+            }
+        } catch (error) {
+            runInAction(() => this.setMainPhotoLoading = false);
+        }
+    }
+
+    deletePhoto = async (photo: Photo) => {
+        this.deletePhotoLoading = true;
+        try {
+
+            runInAction(() => this.deletePhotoLoading = false);
+        } catch (error) {
+            console.log(error);
+            runInAction(() => this.deletePhotoLoading = false);
         }
     }
 }

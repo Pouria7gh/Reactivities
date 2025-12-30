@@ -4,13 +4,14 @@ import { IoMdPhotos } from "react-icons/io";
 import { useStore } from "../../stores/Store";
 import { useState } from "react";
 import PhotoUploadWidget from "../../common/photoUpload/PhotoUploadWidget";
+import EditPhoto from "./EditPhoto";
 
 interface Props {
   photos: Photo[] | undefined;
 }
 
 function ProfilePhotosTab({ photos }: Props) {
-  const { profileStore } = useStore();
+  const { profileStore, modalStore } = useStore();
   const [editMode, setEditMode] = useState(false);
 
   return (
@@ -33,11 +34,18 @@ function ProfilePhotosTab({ photos }: Props) {
       )}
 
       {!editMode && photos!.map((photo) => (
-        <img
-          className="col-span-6 sm:col-span-4 lg:col-span-3 2xl:col-span-2 rounded-sm"
+        <div
           key={photo.id}
-          src={photo.url}
-        />
+          className={`col-span-6 sm:col-span-4 lg:col-span-3 2xl:col-span-2 rounded-sm
+            ${profileStore.isCurrentUser && "profile-photo-item"}`}
+          onClick={() => profileStore.isCurrentUser ? modalStore.openModal(EditPhoto, photo): ""}
+        >
+          <img
+            className="object-cover"
+            key={photo.id}
+            src={photo.url}
+          />
+        </div>
       ))}
 
       {editMode && (

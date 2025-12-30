@@ -91,8 +91,8 @@ const photos = {
         });
         return response.data;
     },
-    remove: (photoId: string) => requests.delete<void>(`/Photos/${photoId}`),
-    setMainPhoto: (photoId: string) => requests.post<void>(`/Photos/${photoId}`, {})
+    delete: (photoId: string) => requests.delete<void>(`/Photos/${photoId}`),
+    setMainPhoto: (photoId: string) => requests.post<void>(`/Photos/${photoId}/setMain`, {})
 }
 
 const agent = {

@@ -1,0 +1,37 @@
+/* profile photo item in ProfilePhotoTab */
+.profile-photo-item {
+    position: relative;
+    cursor: pointer;
+}
+.profile-photo-item::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    background-color: rgba(0, 0, 0, 0.5);
+    transform: scale(90%);
+    transition: all ease-out 0.3s;
+    opacity: 0;
+    z-index: 1;
+}
+.profile-photo-item:hover::before {
+    opacity: 1;
+    transform: scale(1);
+}
+.profile-photo-item::after {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, 0);
+    transition: all ease-out 0.3s;
+    opacity: 0;
+    content: "Edit Photo";
+    z-index: 2;
+    color: #fff;
+}
+.profile-photo-item:hover::after {
+    opacity: 1;
+    transform: translate(-50%, -50%);
+}

@@ -5,6 +5,7 @@ import {v4 as uuid} from 'uuid';
 import { format } from 'date-fns';
 import { store } from "./Store";
 import { Profile } from "../models/Profile";
+import { ActivityAttendee } from "../models/ActivityAttendee";
 export default class ActivityStore {
     activityRegistry: Map<string, Activity> = new Map();
     selectedActivity: Activity | undefined = undefined;
@@ -176,5 +177,18 @@ export default class ActivityStore {
         } finally {
             runInAction(() => this.cancelingActivity = false);
         }
+    }
+
+    updateAttendeeImage = (profile: Profile) => {
+        if (!this.activityRegistry.size) return;
+        this.activityRegistry.forEach((activity) => {
+            if (activity.hostUsername === profile.username) {
+                activity.host = new ActivityAttendee(profile);
+            }
+            const attendee = activity.attendees.find(a => a.username === profile.username);
+            if (attendee) {
+                attendee.image = profile.image;
+            }
+        })
     }
 }
