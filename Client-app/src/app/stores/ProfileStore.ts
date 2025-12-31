@@ -8,7 +8,7 @@ export default class ProfileStore {
     loadingProfile: boolean = false;
     profile: Profile | null = null;
     uploading = false;
-    setMainPhotoLoading = false;
+    mainPhotoLoading = false;
     deletePhotoLoading = false;
 
     constructor() {
@@ -42,60 +42,109 @@ export default class ProfileStore {
         }
     }
 
+    // upload photo
     uploadPhoto = async (photo: Blob) => {
-        this.uploading = true;
+        this.setUploading(true);
         try {
             const responsePhoto = await agent.photos.add(photo);
-            runInAction(() => {
-                if (!this.profile) {
-                    this.uploading = false;
-                    return;
-                }
-                if (this.profile.photos) {
-                    this.profile.photos = [responsePhoto, ...this.profile?.photos];
-                } else {
-                    this.profile.photos = [responsePhoto];
-                }
-                if (responsePhoto.isMain) {
-                    this.profile.image = responsePhoto.url;
-                    store.userStore.setUserImage(responsePhoto.url);
-                }
-
-                this.uploading = false;
-            })
+            this.addPhoto(responsePhoto);
+            this.setUploading(false);
         } catch (error) {
             console.log(error);
-            runInAction(() => this.uploading = false);
+            this.setUploading(false);
         }
     }
 
+    addPhoto = (photo: Photo) => {
+        this.addPhotoToProfile(photo);
+        if (photo.isMain) {
+            this.updateMainPhoto(photo);
+        }
+    }
+
+    addPhotoToProfile = (photo: Photo) => {
+        if (this.profile!.photos) {
+            this.profile!.photos = [photo, ...this.profile!.photos];
+        } else {
+            this.profile!.photos = [photo];
+        }
+    } 
+
+    setUploading = (state: boolean) => {
+        this.uploading = state;
+    }
+
+    // set main photo
     setMainPhoto = async (photo: Photo) => {
-        this.setMainPhotoLoading = true;
+        this.setMainPhotoLoading(true);
         try {
             await agent.photos.setMainPhoto(photo.id);
-            store.userStore.setUserImage(photo.url);
-            runInAction(() => {
-                this.profile!.image = photo.url;
-                this.profile!.photos!.find(p => p.isMain)!.isMain = false;
-                this.profile!.photos!.find(p => p.id == photo.id)!.isMain = true;
-                this.setMainPhotoLoading = false;
-            })
-            if (this.profile && store.activityStore.activityRegistry.size) {
-                store.activityStore.updateAttendeeImage(this.profile);
-            }
+            this.updateMainPhoto(photo);
+            this.setMainPhotoLoading(false);
         } catch (error) {
-            runInAction(() => this.setMainPhotoLoading = false);
+            console.log(error);
+            this.setMainPhotoLoading(false);
         }
     }
 
-    deletePhoto = async (photo: Photo) => {
-        this.deletePhotoLoading = true;
-        try {
+    updateMainPhoto = (photo: Photo) => {
+        store.userStore.setUserImage(photo.url);
+        this.updateProfileMainPhoto(photo);
+        store.activityStore.updateActivityAttendeeImage(this.profile!.username, photo.url);
+    }
+    
+    updateProfileMainPhoto = (photo: Photo) => {
+        this.profile!.image = photo.url;
+        const currentMainPhoto = this.profile!.photos!.find(p => p.isMain);
+        if (currentMainPhoto) currentMainPhoto.isMain = false;
+        this.profile!.photos!.find(p => p.id == photo.id)!.isMain = true;
+    }
+    
+    setMainPhotoLoading(state: boolean) {
+        this.mainPhotoLoading = state;
+    }
 
-            runInAction(() => this.deletePhotoLoading = false);
+    // delete photo
+    deletePhoto = async (photo: Photo) => {
+        this.setDeletePhotoLoading(true);
+        try {
+            await agent.photos.delete(photo.id);
+            this.removeProfilePhoto(photo);
+            await this.emptyOrReplaceMainPhoto(photo);
+            this.setDeletePhotoLoading(false);
         } catch (error) {
             console.log(error);
-            runInAction(() => this.deletePhotoLoading = false);
+            this.setDeletePhotoLoading(false);
         }
+    }
+    
+    removeProfilePhoto = (photo: Photo) => {
+        this.profile!.photos = this.profile!.photos!.filter(p => p.id !== photo.id);
+    }
+
+    emptyOrReplaceMainPhoto = async (deletedPhoto: Photo) => {
+        if (!deletedPhoto.isMain) return;
+        var newMainPhoto = this.getNewMainPhoto();
+        if (newMainPhoto) {
+            // replace
+            await this.setMainPhoto(newMainPhoto);
+        } else {
+            //empty
+            this.emptyMainPhoto();
+        }
+    }
+
+    getNewMainPhoto = () => {
+        return this.profile!.photos![0];
+    }
+
+    emptyMainPhoto = () => {
+        this.profile!.image = "";
+        store.userStore.setUserImage("");
+        store.activityStore.updateActivityAttendeeImage(this.profile!.username, "");
+    }
+
+    setDeletePhotoLoading = (state: boolean) => {
+        this.deletePhotoLoading = state;
     }
 }

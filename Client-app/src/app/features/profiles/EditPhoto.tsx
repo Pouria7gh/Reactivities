@@ -2,23 +2,38 @@ import { observer } from "mobx-react-lite"
 import { useStore } from "../../stores/Store"
 
 function EditPhoto() {
-    const {modalStore: {closeModal, modal: {props}}, profileStore} = useStore();
+    const {modalStore: {closeModal, modal: {props: photo}}, profileStore} = useStore();
+
+    function handleDeletePhoto() {
+        profileStore.deletePhoto(photo).then(() => {
+            closeModal();
+        });
+    }
+
   return (
     <div>
-        <img src={props.url} alt="photo" className="mb-3" />
+        <img src={photo.url} alt="photo" className="mb-3" />
         <div className="flex">
             <button 
-                onClick={() => profileStore.setMainPhoto(props)}
+                onClick={() => profileStore.setMainPhoto(photo)}
                 className="btn btn-info me-1"
-                disabled={props.isMain || profileStore.setMainPhotoLoading}
+                disabled={photo.isMain || profileStore.mainPhotoLoading}
             >
-                {!profileStore.setMainPhotoLoading && "SetMain"}
-                {profileStore.setMainPhotoLoading &&
+                {!profileStore.mainPhotoLoading && "SetMain"}
+                {profileStore.mainPhotoLoading &&
                 <span className="loading loading-sm loading-info"></span>}
             </button>
-            <button onClick={closeModal} className="btn btn-error me-auto">
-                Delete
+
+            <button 
+                onClick={handleDeletePhoto}
+                className="btn btn-error me-auto"
+                disabled={profileStore.deletePhotoLoading}
+            >
+                {!profileStore.deletePhotoLoading && "Delete"}
+                {profileStore.deletePhotoLoading &&
+                <span className="loading loading-sm loading-error"></span>}
             </button>
+
             <button onClick={closeModal} className="btn btn-outline btn-error">
                 close
             </button>

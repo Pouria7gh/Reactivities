@@ -51,7 +51,7 @@ function PhotoUploadWidget({className, setEditMode}: props) {
         <div className="col-span-12">
           {files && (<>
             <button 
-              className="btn btn-success" 
+              className="btn btn-success me-1" 
               onClick={handleUploadPhoto} 
               disabled={uploading}
             >
