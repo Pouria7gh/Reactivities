@@ -1,4 +1,4 @@
-import { makeAutoObservable, runInAction } from "mobx";
+import { makeAutoObservable, runInAction, toJS } from "mobx";
 import type { Profile, ProfileFormValues } from "../models/Profile";
 import agent from "../api/agent";
 import { store } from "./Store";
@@ -27,20 +27,40 @@ export default class ProfileStore {
         return false;
     }
 
+    get photosByDate() {
+        if (!this.profile!.photos) return undefined;
+
+        const photos = this.profile!.photos.slice();
+        
+        return photos.sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime());
+    }
+
     getProfile = async (username: string) => {
-        this.loadingProfile = true;
+        this.setLoadingProfile(true);
         try {
             var profile = await agent.profile.get(username);
-            runInAction(() => {
-                this.profile = profile;
-                this.loadingProfile = false;
-            })
+            this.setProfile(profile);
+            this.setLoadingProfile(false);
         } catch (error) {
             console.log(error);
-            runInAction(() => {
-                this.loadingProfile = false;
-            })
+            this.setLoadingProfile(false);
         }
+    }
+
+    private setLoadingProfile = (state: boolean) => {
+        this.loadingProfile = state;
+    }
+
+    private setProfile = (profile: Profile) => {
+        this.profile = profile;
+        this.setProfilePhotosDate();
+    }
+
+    private setProfilePhotosDate = () => {
+        if (!this.profile!.photos) return;
+        this.profile!.photos.forEach((photo) => {
+            photo.createdAt = new Date(photo.createdAt);
+        })
     }
 
     // upload photo
@@ -64,6 +84,7 @@ export default class ProfileStore {
     }
 
     addPhotoToProfile = (photo: Photo) => {
+        photo.createdAt = new Date(photo.createdAt);
         if (this.profile!.photos) {
             this.profile!.photos = [photo, ...this.profile!.photos];
         } else {

@@ -46,7 +46,7 @@ function getTabContents(profileStore: ProfileStore) {
       id: 2,
       menuItem: "Photos",
       renderTabContent: () => (
-        <ProfilePhotoTabContent photos={profileStore.profile?.photos} />
+        <ProfilePhotoTabContent photos={profileStore.photosByDate} />
       ),
     },
     {
