@@ -16,3 +16,8 @@ export class Profile implements Profile {
         this.image = user.image
     }
 }
+
+export interface ProfileFormValues {
+    displayName: string;
+    bio?: string;
+}

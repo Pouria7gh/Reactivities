@@ -28,12 +28,10 @@ public class ProfileDetails
     {
         private readonly IMapper _mapper;
         private readonly DataContext _dataContext;
-        private readonly IUserAccessor _userAccessor;
-        public Handler(DataContext dataContext, IMapper mapper, IUserAccessor userAccessor)
+        public Handler(DataContext dataContext, IMapper mapper)
         {
             _dataContext = dataContext;
             _mapper = mapper;
-            _userAccessor = userAccessor;
         }
         public async Task<Result<Profile>> Handle(Query request, CancellationToken cancellationToken)
         {

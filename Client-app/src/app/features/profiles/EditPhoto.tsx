@@ -20,7 +20,8 @@ function EditPhoto() {
                 disabled={photo.isMain || profileStore.mainPhotoLoading}
             >
                 {!profileStore.mainPhotoLoading && "SetMain"}
-                {profileStore.mainPhotoLoading &&
+                {profileStore.mainPhotoLoading && profileStore.deletePhotoLoading && "SetMain"}
+                {profileStore.mainPhotoLoading && !profileStore.deletePhotoLoading &&
                 <span className="loading loading-sm loading-info"></span>}
             </button>
 

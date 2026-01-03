@@ -5,7 +5,7 @@ interface Props {
     profile: Profile;
 }
 
-function ProfileHeader({profile}: Props) {
+function ProfilePageHeader({profile}: Props) {
   return (
     <div className="bg-base-100 inset-ring inset-ring-gray-300 shadow-lg py-3 px-6 rounded rounded-lg flex items-center">
         <img 
@@ -30,4 +30,4 @@ function ProfileHeader({profile}: Props) {
   )
 }
 
-export default observer(ProfileHeader)
+export default observer(ProfilePageHeader)

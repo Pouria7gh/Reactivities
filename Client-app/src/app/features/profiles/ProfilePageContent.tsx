@@ -3,8 +3,9 @@ import { useState } from "react";
 import ProfilePhotoTabContent from "./ProfilePhotosTab";
 import { useStore } from "../../stores/Store";
 import type ProfileStore from "../../stores/ProfileStore";
+import ProfileAboutTab from "./ProfileAboutTab";
 
-function ProfileContent() {
+function ProfilePageContent() {
   const { profileStore } = useStore();
   const tabContents = getTabContents(profileStore);
   const [activeTabContent, setActiveTabContent] = useState(tabContents[0]);
@@ -39,7 +40,7 @@ function getTabContents(profileStore: ProfileStore) {
     {
       id: 1,
       menuItem: "About",
-      renderTabContent: () => "User profile information",
+      renderTabContent: () => <ProfileAboutTab/>,
     },
     {
       id: 2,
@@ -66,4 +67,4 @@ function getTabContents(profileStore: ProfileStore) {
   ];
 }
 
-export default observer(ProfileContent);
+export default observer(ProfilePageContent);

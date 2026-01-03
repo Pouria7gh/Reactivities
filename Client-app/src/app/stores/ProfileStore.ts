@@ -1,5 +1,5 @@
 import { makeAutoObservable, runInAction } from "mobx";
-import type { Profile } from "../models/Profile";
+import type { Profile, ProfileFormValues } from "../models/Profile";
 import agent from "../api/agent";
 import { store } from "./Store";
 import type Photo from "../models/Photo";
@@ -10,6 +10,7 @@ export default class ProfileStore {
     uploading = false;
     mainPhotoLoading = false;
     deletePhotoLoading = false;
+    updateProfileLoading = false;
 
     constructor() {
         makeAutoObservable(this);        
@@ -146,5 +147,29 @@ export default class ProfileStore {
 
     setDeletePhotoLoading = (state: boolean) => {
         this.deletePhotoLoading = state;
+    }
+
+    // updating profile
+    updateProfile = async (profile: ProfileFormValues) => {
+        this.setUpdateProfileLoading(true);
+        try {
+            await agent.profile.update(profile);
+            this.updateProfileInfo(profile);
+            store.userStore.setUserInfoFromProfile();
+            store.activityStore.setActivityAttendeeInfoFromProfile();
+            this.setUpdateProfileLoading(false);
+        } catch (error) {
+            console.log(error);
+            this.setUpdateProfileLoading(false);
+        }
+    }
+
+    updateProfileInfo = (profile: ProfileFormValues) => {
+        this.profile!.displayName = profile.displayName;
+        this.profile!.bio = profile.bio;
+    }
+
+    setUpdateProfileLoading = (state: boolean) => {
+        this.updateProfileLoading = state;
     }
 }

@@ -5,7 +5,7 @@ import Routes from "../router/Routes";
 import { store } from "../stores/Store";
 import type { ServerError } from "../models/ServerError";
 import { type User, type UserFormValues } from "../models/User";
-import { Profile } from "../models/Profile";
+import { Profile, type ProfileFormValues } from "../models/Profile";
 import type Photo from "../models/Photo";
 
 axios.defaults.baseURL = "http://localhost:5000/api";
@@ -79,7 +79,8 @@ const account = {
 }
 
 const profile = {
-    get: (username: string) => requests.get<Profile>(`/profiles/${username}`)
+    get: (username: string) => requests.get<Profile>(`/profiles/${username}`),
+    update: (profile: ProfileFormValues) => requests.post<void>('/profiles/updateProfile', profile)
 }
 
 const photos = {

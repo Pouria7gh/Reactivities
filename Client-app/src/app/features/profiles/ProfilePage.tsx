@@ -1,6 +1,6 @@
 import { observer } from "mobx-react-lite";
-import ProfileContent from "./ProfileContent";
-import ProfileHeader from "./ProfileHeader";
+import ProfilePageContent from "./ProfilePageContent";
+import ProfilePageHeader from "./ProfilePageHeader";
 import { useParams } from "react-router";
 import { useStore } from "../../stores/Store";
 import { useEffect } from "react";
@@ -24,8 +24,8 @@ function ProfilePage() {
 
   return (
     <div className="container mx-auto pt-4 px-4">
-      <ProfileHeader profile={profile!} />
-      <ProfileContent />
+      <ProfilePageHeader profile={profile!} />
+      <ProfilePageContent />
     </div>
   )
 }

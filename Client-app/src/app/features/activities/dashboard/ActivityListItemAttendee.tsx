@@ -1,7 +1,7 @@
 import { Link } from "react-router";
 import type { Profile } from "../../../models/Profile";
 import { observer } from "mobx-react-lite";
-import ProfileCard from "../../profiles/ProfileCard";
+import ProfileCardPopover from "../../profiles/ProfileCardPopover";
 
 interface props {
   attendees: Profile[] | undefined;
@@ -24,7 +24,7 @@ function ActivityListItemAttendee({attendees}: props) {
             src={attendee.image || "/assets/user.png"}
             className="w-10 rounded-full"
           />
-          <ProfileCard profile={attendee}/>
+          <ProfileCardPopover profile={attendee}/>
         </Link>
       ))}
     </div>

@@ -15,7 +15,13 @@ function AppTextarea(props: props) {
         {props.label && 
           <legend className="fieldset-legend">{props.label}</legend>
         }
-        <textarea {...field} {...props} className={`input w-full min-h-15 ${meta.error && meta.touched ? "input-error" : ""}`} placeholder={props.placeholder} />
+
+        <textarea
+          {...field}
+          {...props}
+          className={`input w-full min-h-20 ${meta.error && meta.touched ? "input-error" : ""}`} placeholder={props.placeholder}
+        />
+
         {meta.error && meta.touched &&
         <p className="label text-error">{meta.error}</p>}
     </fieldset>

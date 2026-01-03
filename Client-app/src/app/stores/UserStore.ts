@@ -58,4 +58,10 @@ export default class UserStore {
     setUserImage(image: string) {
         if (this.user) this.user.image = image;
     }
+
+    setUserInfoFromProfile = () => {
+        const profile = store.profileStore.profile;
+        if (!profile || !this.user) return;
+        this.user.displayName = profile.displayName;
+    }
 }

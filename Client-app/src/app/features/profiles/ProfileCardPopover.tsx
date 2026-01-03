@@ -1,11 +1,29 @@
 import { observer } from "mobx-react-lite";
 import { Profile } from "../../models/Profile"
+import { useEffect, useState } from "react";
 
 interface props {
     profile : Profile;
 }
 
-function ProfileCard({profile}: props) {
+function ProfileCardPopover({profile}: props) {
+  const [bio, setBio] = useState<string>();
+
+  useEffect(() => {
+    const truncateAt = 50;
+
+    if (!profile.bio) {
+      setBio(profile.bio);
+      return;
+    }
+
+    if (profile.bio.length > truncateAt) {
+      setBio(profile.bio.slice(0, truncateAt).concat("..."));
+    } else {
+      setBio(profile.bio);
+    }
+  }, [profile.bio])
+
   return (
     <div
       className="
@@ -18,13 +36,14 @@ function ProfileCard({profile}: props) {
         group-hover:translate-y-0
         group-hover:pointer-events-auto
         z-100
+        break-all
       "
     >
       <p className="text-lg">{profile.displayName}</p>
-      <p>{profile.bio ? profile.bio : "bio goes here"}</p>
+      <p>{bio ? bio : <span className="text-gray-400">no bio.</span>}</p>
       <p className="mt-2">20 | followers</p>
     </div>
   )
 }
 
-export default observer(ProfileCard)
+export default observer(ProfileCardPopover)

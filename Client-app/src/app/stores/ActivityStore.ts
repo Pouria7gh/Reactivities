@@ -190,4 +190,20 @@ export default class ActivityStore {
             }
         })
     }
+
+    setActivityAttendeeInfoFromProfile = () => {
+        const profile = store.profileStore.profile;
+        if (!this.activityRegistry.size || !profile) return;
+        this.activityRegistry.forEach((activity) => {
+            if (activity.hostUsername === profile.username) {
+                activity.host!.displayName = profile.displayName;
+                activity.host!.bio = profile.bio;
+            }
+            const attendee = activity.attendees.find(a => a.username === profile.username);
+            if (attendee) {
+                attendee.bio = profile.bio;
+                attendee.displayName = profile.displayName;
+            }
+        })
+    }
 }
