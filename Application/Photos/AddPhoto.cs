@@ -49,7 +49,8 @@ public class AddPhoto
             {
                 Id = photoUploadResult.PublicId,
                 Url = photoUploadResult.Url,
-                IsMain = !user.Photos.Any()
+                IsMain = !user.Photos.Any(),
+                CreatedAt = DateTime.Now
             };
 
             user.Photos.Add(photo);
