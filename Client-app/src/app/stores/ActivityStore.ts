@@ -48,22 +48,38 @@ export default class ActivityStore {
         }
     }
 
-    loadActivity = async (id: string) => {
-        let activity = this.getActivity(id);
-        if (activity) this.selectedActivity = activity;
-        else {
-            this.setLoadingInitial(true);
-            try {
-                activity = await agent.activities.details(id);
-                if (activity) this.setActivity(activity);
-                runInAction(() => {
-                    this.selectedActivity = activity;
-                });
-                this.setLoadingInitial(false);
-            } catch (error) {
-                this.setLoadingInitial(false);
-            }
+    loadActivity = async (activityId: string) => {
+
+        if (this.hasActivity(activityId)) {
+            this.selectActivity(activityId);
+        } else {
+            const activity = await this.fetchActivity(activityId);
+            this.setSelectedActivity(activity);
         }
+    }
+
+    private hasActivity = (activityId: string) => {
+        return this.activityRegistry.has(activityId);
+    }
+
+    private selectActivity = (activityId: string) => {
+        this.selectedActivity = this.getActivity(activityId);
+    }
+
+    private fetchActivity = async (activityId: string) => {
+        this.setLoadingInitial(true);
+        try {
+            return await agent.activities.details(activityId);
+        } catch (error) {
+            console.log(error);
+        } finally {
+            this.setLoadingInitial(false);
+        }
+    }
+
+    private setSelectedActivity = (activity: Activity | undefined) => {
+        if (activity) this.setActivity(activity);
+        this.selectedActivity = activity;
     }
 
     private setActivity = (activity : Activity) => {
