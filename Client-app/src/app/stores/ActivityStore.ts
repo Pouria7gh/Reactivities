@@ -92,53 +92,68 @@ export default class ActivityStore {
     }
 
     private initializeActivity(activity: Activity) {
-        this.setActivityIsGoing(activity);
-        this.setActivityIsHost(activity);
-        this.setActivityHost(activity);
-        this.setActivityDate(activity);
+        this.markActivityAsGoing(activity);
+        this.markActivityAsHost(activity);
+        this.assignHost(activity);
+        this.normalizeActivityDate(activity);
     }
 
-    private setActivityIsGoing = (activity: Activity) => {
+    private markActivityAsGoing = (activity: Activity) => {
         const user = store.userStore.user;
         activity.isGoing = activity.attendees
             .some(attendee => attendee.username === user!.username);
     }
 
-    private setActivityIsHost = (activity: Activity) => {
+    private markActivityAsHost = (activity: Activity) => {
         const user = store.userStore.user;
         activity.isHost = activity.hostUsername === user!.username;
     }
 
-    private setActivityHost = (activity: Activity) => {
+    private assignHost = (activity: Activity) => {
         activity.host = activity.attendees
             .find(attendee => attendee.username === activity.hostUsername);
     }
 
-    private setActivityDate = (activity: Activity) => {
+    private normalizeActivityDate = (activity: Activity) => {
         activity.date = new Date(activity.date);
     }
 
     private getActivity = (id: string) =>  this.activityRegistry.get(id);
 
     createActivity = async (activityValues: ActivityFormValues) => {
-        const user = store.userStore.user;
-        const attendee = new Profile(user!);
-        if (!activityValues.id) {
-            activityValues.id = uuid();
-        }
         try {
-            await agent.activities.create(activityValues);
-            const activity = new Activity(activityValues);
-            activity.hostUsername = user!.username;
-            activity.attendees = [attendee];
-            this.initializeActivity(activity);
+            const activityValuesWithId = this.setActivityValuesId(activityValues);
+            await agent.activities.create(activityValuesWithId);
+            const activity = new Activity(activityValuesWithId);
+            this.initializeNewActivity(activity);
             this.setActivityToRegistry(activity);
-            runInAction(() => {
-                this.selectedActivity = activity;
-            })
+            this.setSelectedActivity(activity);
         } catch (error) {
             console.log(error);
         }
+    }
+
+    private setActivityValuesId(activityValues: ActivityFormValues) {
+        if (activityValues.id) return activityValues;
+        return {...activityValues, id: uuid()};
+    }
+
+    private initializeNewActivity = (activity: Activity) => {
+        this.assignHostFromUser(activity);
+        this.addInitialAttendee(activity);
+        this.markActivityAsGoing(activity);
+        this.markActivityAsHost(activity);
+    }
+
+    private assignHostFromUser = (activity: Activity) => {
+        const user = store.userStore.user;
+        activity.hostUsername = user!.username;
+    }
+
+    private addInitialAttendee = (activity: Activity) => {
+        const user = store.userStore.user;
+        const attendee = new Profile(user!);
+        activity.attendees = [attendee];
     }
 
     editActivity = async (activity: ActivityFormValues) => {
