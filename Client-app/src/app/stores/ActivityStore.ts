@@ -40,10 +40,12 @@ export default class ActivityStore {
         try {
             const activities = await agent.activities.list();
             activities.forEach(activity => {
-                this.setActivity(activity);
+                this.initializeActivity(activity);
+                this.setActivityToRegistry(activity);
             })
-            this.setLoadingInitial(false);
         } catch (error) {
+            console.log(error);
+        } finally {
             this.setLoadingInitial(false);
         }
     }
@@ -54,7 +56,11 @@ export default class ActivityStore {
             this.selectActivity(activityId);
         } else {
             const activity = await this.fetchActivity(activityId);
+            if(!activity) return;
+
+            this.initializeActivity(activity);
             this.setSelectedActivity(activity);
+            this.setActivityToRegistry(activity);
         }
     }
 
@@ -78,21 +84,38 @@ export default class ActivityStore {
     }
 
     private setSelectedActivity = (activity: Activity | undefined) => {
-        if (activity) this.setActivity(activity);
         this.selectedActivity = activity;
     }
 
-    private setActivity = (activity : Activity) => {
-        const user = store.userStore.user;
-        if (user) {
-            activity.isGoing = activity.attendees?.some(x => {
-                return x.username == user.username;
-            });
-            activity.isHost = activity.hostUsername === user.username;
-            activity.host = activity.attendees?.find(x => x.username === activity.hostUsername);
-        }
-        activity.date = new Date(activity.date!);
+    private setActivityToRegistry = (activity : Activity) => {
         this.activityRegistry.set(activity.id, activity);
+    }
+
+    private initializeActivity(activity: Activity) {
+        this.setActivityIsGoing(activity);
+        this.setActivityIsHost(activity);
+        this.setActivityHost(activity);
+        this.setActivityDate(activity);
+    }
+
+    private setActivityIsGoing = (activity: Activity) => {
+        const user = store.userStore.user;
+        activity.isGoing = activity.attendees
+            .some(attendee => attendee.username === user!.username);
+    }
+
+    private setActivityIsHost = (activity: Activity) => {
+        const user = store.userStore.user;
+        activity.isHost = activity.hostUsername === user!.username;
+    }
+
+    private setActivityHost = (activity: Activity) => {
+        activity.host = activity.attendees
+            .find(attendee => attendee.username === activity.hostUsername);
+    }
+
+    private setActivityDate = (activity: Activity) => {
+        activity.date = new Date(activity.date);
     }
 
     private getActivity = (id: string) =>  this.activityRegistry.get(id);
@@ -108,7 +131,8 @@ export default class ActivityStore {
             const activity = new Activity(activityValues);
             activity.hostUsername = user!.username;
             activity.attendees = [attendee];
-            this.setActivity(activity);
+            this.initializeActivity(activity);
+            this.setActivityToRegistry(activity);
             runInAction(() => {
                 this.selectedActivity = activity;
             })

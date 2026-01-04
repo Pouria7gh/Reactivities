@@ -3,7 +3,7 @@ import type { ActivityAttendee } from "./ActivityAttendee"
 export interface Activity {
   id: string
   title: string
-  date: Date | null
+  date: Date
   description: string
   category: string
   city: string
