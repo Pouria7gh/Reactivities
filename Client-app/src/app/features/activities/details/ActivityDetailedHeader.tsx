@@ -14,7 +14,7 @@ function ActivityDetailedHeader({ activity }: props) {
     activityStore: {
       updateAttendance,
       updatingAttendance,
-      cancelActivityToggle,
+      toggleActivityStatus,
       cancelingActivity,
     },
   } = useStore();
@@ -71,7 +71,7 @@ function ActivityDetailedHeader({ activity }: props) {
         {activity!.isHost && (
           <>
             <button
-              onClick={cancelActivityToggle}
+              onClick={toggleActivityStatus}
               className={`btn btn-sm btn-outline ${
                 activity.isCancelled ? "btn-success" : "btn-error"
               }`}
