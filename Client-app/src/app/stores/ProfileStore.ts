@@ -1,4 +1,4 @@
-import { makeAutoObservable, runInAction, toJS } from "mobx";
+import { makeAutoObservable } from "mobx";
 import type { Profile, ProfileFormValues } from "../models/Profile";
 import agent from "../api/agent";
 import { store } from "./Store";
@@ -38,13 +38,18 @@ export default class ProfileStore {
     getProfile = async (username: string) => {
         this.setLoadingProfile(true);
         try {
-            var profile = await agent.profile.get(username);
-            this.setProfile(profile);
-            this.setLoadingProfile(false);
+            await this.fetchAndSetProfile(username);
         } catch (error) {
             console.log(error);
+        } finally {
             this.setLoadingProfile(false);
         }
+    }
+    
+    private fetchAndSetProfile = async (username: string) => {
+        var profile = await agent.profile.get(username);
+        this.normalizePhotosDate(profile);
+        this.setProfile(profile);    
     }
 
     private setLoadingProfile = (state: boolean) => {
@@ -53,37 +58,35 @@ export default class ProfileStore {
 
     private setProfile = (profile: Profile) => {
         this.profile = profile;
-        this.setProfilePhotosDate();
     }
 
-    private setProfilePhotosDate = () => {
-        if (!this.profile!.photos) return;
-        this.profile!.photos.forEach((photo) => {
+    private normalizePhotosDate = (profile: Profile) => {
+        if (!profile.photos) return;
+        profile.photos.forEach((photo) => {
             photo.createdAt = new Date(photo.createdAt);
         })
     }
 
-    // upload photo
     uploadPhoto = async (photo: Blob) => {
         this.setUploading(true);
         try {
-            const responsePhoto = await agent.photos.add(photo);
-            this.addPhoto(responsePhoto);
-            this.setUploading(false);
+            await this.performUploadPhoto(photo);
         } catch (error) {
             console.log(error);
+        } finally {
             this.setUploading(false);
         }
     }
-
-    addPhoto = (photo: Photo) => {
-        this.addPhotoToProfile(photo);
-        if (photo.isMain) {
-            this.updateMainPhoto(photo);
+    
+    private performUploadPhoto = async (photo: Blob) => {
+        const responsePhoto = await agent.photos.add(photo);
+        this.addPhotoToProfile(responsePhoto);
+        if (responsePhoto.isMain) {
+            this.updateMainPhoto(responsePhoto);
         }
     }
 
-    addPhotoToProfile = (photo: Photo) => {
+    private addPhotoToProfile = (photo: Photo) => {
         photo.createdAt = new Date(photo.createdAt);
         if (this.profile!.photos) {
             this.profile!.photos = [photo, ...this.profile!.photos];
@@ -92,105 +95,129 @@ export default class ProfileStore {
         }
     } 
 
-    setUploading = (state: boolean) => {
+    private setUploading = (state: boolean) => {
         this.uploading = state;
     }
 
-    // set main photo
     setMainPhoto = async (photo: Photo) => {
         this.setMainPhotoLoading(true);
         try {
-            await agent.photos.setMainPhoto(photo.id);
-            this.updateMainPhoto(photo);
-            this.setMainPhotoLoading(false);
+            await this.setMainPhotoAndUpdateProfile(photo);
         } catch (error) {
             console.log(error);
+        } finally {
             this.setMainPhotoLoading(false);
         }
     }
-
-    updateMainPhoto = (photo: Photo) => {
-        store.userStore.setUserImage(photo.url);
+    
+    private setMainPhotoAndUpdateProfile = async (photo: Photo) => {
+        await agent.photos.setMainPhoto(photo.id);
+        this.updateMainPhoto(photo);
+    }
+    
+    private updateMainPhoto = (photo: Photo) => {
         this.updateProfileMainPhoto(photo);
+        this.updateMainPhotoInStores(photo);
+    }
+
+    private updateMainPhotoInStores = (photo: Photo) => {
+        store.userStore.setUserImage(photo.url);
         store.activityStore.updateActivityAttendeeImage(this.profile!.username, photo.url);
     }
     
-    updateProfileMainPhoto = (photo: Photo) => {
+    private updateProfileMainPhoto = (photo: Photo) => {
         this.profile!.image = photo.url;
         const currentMainPhoto = this.profile!.photos!.find(p => p.isMain);
         if (currentMainPhoto) currentMainPhoto.isMain = false;
         this.profile!.photos!.find(p => p.id == photo.id)!.isMain = true;
     }
     
-    setMainPhotoLoading(state: boolean) {
+    private setMainPhotoLoading(state: boolean) {
         this.mainPhotoLoading = state;
     }
 
-    // delete photo
     deletePhoto = async (photo: Photo) => {
         this.setDeletePhotoLoading(true);
         try {
-            await agent.photos.delete(photo.id);
-            this.removeProfilePhoto(photo);
-            await this.emptyOrReplaceMainPhoto(photo);
-            this.setDeletePhotoLoading(false);
+            await this.performDeletePhoto(photo);
         } catch (error) {
             console.log(error);
+        } finally {
             this.setDeletePhotoLoading(false);
         }
     }
     
-    removeProfilePhoto = (photo: Photo) => {
+    private performDeletePhoto = async (photo: Photo) => {
+        await agent.photos.delete(photo.id);
+        this.removeProfilePhoto(photo);
+        if (photo.isMain) {
+            await this.emptyOrReplaceMainPhoto();
+        }
+    }
+
+    private removeProfilePhoto = (photo: Photo) => {
         this.profile!.photos = this.profile!.photos!.filter(p => p.id !== photo.id);
     }
 
-    emptyOrReplaceMainPhoto = async (deletedPhoto: Photo) => {
-        if (!deletedPhoto.isMain) return;
+    private emptyOrReplaceMainPhoto = async () => {
         var newMainPhoto = this.getNewMainPhoto();
         if (newMainPhoto) {
-            // replace
             await this.setMainPhoto(newMainPhoto);
         } else {
-            //empty
             this.emptyMainPhoto();
         }
     }
 
-    getNewMainPhoto = () => {
+    private getNewMainPhoto = () => {
         return this.profile!.photos![0];
     }
 
-    emptyMainPhoto = () => {
+    private emptyMainPhoto = () => {
+        this.emptyProfileMainPhoto();
+        this.emptyMainPhotoInStores();
+    }
+    
+    private emptyProfileMainPhoto = () => {
         this.profile!.image = "";
+    }
+    
+    private emptyMainPhotoInStores = () => {
         store.userStore.setUserImage("");
         store.activityStore.updateActivityAttendeeImage(this.profile!.username, "");
     }
 
-    setDeletePhotoLoading = (state: boolean) => {
+    private setDeletePhotoLoading = (state: boolean) => {
         this.deletePhotoLoading = state;
     }
 
-    // updating profile
-    updateProfile = async (profile: ProfileFormValues) => {
+    updateProfile = async (profileValues: ProfileFormValues) => {
         this.setUpdateProfileLoading(true);
         try {
-            await agent.profile.update(profile);
-            this.updateProfileInfo(profile);
-            store.userStore.setUserInfoFromProfile();
-            store.activityStore.setActivityAttendeeInfoFromProfile();
-            this.setUpdateProfileLoading(false);
+            await this.performUpdateProfile(profileValues);
         } catch (error) {
             console.log(error);
+        } finally {
             this.setUpdateProfileLoading(false);
         }
     }
+    
+    private performUpdateProfile = async (profileValues: ProfileFormValues) => {
+        await agent.profile.update(profileValues);
+        this.updateProfileInfo(profileValues);
+        this.updateProfileInfoInStores();
+    }
+    
+    private updateProfileInfoInStores = () => {
+        store.userStore.setUserInfoFromProfile();
+        store.activityStore.setActivityAttendeeInfoFromProfile();    
+    }
 
-    updateProfileInfo = (profile: ProfileFormValues) => {
+    private updateProfileInfo = (profile: ProfileFormValues) => {
         this.profile!.displayName = profile.displayName;
         this.profile!.bio = profile.bio;
     }
 
-    setUpdateProfileLoading = (state: boolean) => {
+    private setUpdateProfileLoading = (state: boolean) => {
         this.updateProfileLoading = state;
     }
 }
