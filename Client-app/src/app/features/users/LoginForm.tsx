@@ -6,9 +6,22 @@ import { observer } from "mobx-react-lite"
 import { SlLogin } from "react-icons/sl"
 import { MdOutlineMail } from "react-icons/md"
 import { BsKey } from "react-icons/bs"
+import { useNavigate } from "react-router"
 
 function LoginForm() {
   const {userStore, modalStore} = useStore()
+  const navigate = useNavigate();
+
+  function handleSubmit(values:any, setErrors:any, setSubmitting:any) {
+    userStore.login(values).then(() => {
+      modalStore.closeModal();
+      navigate("/Activities");
+    }).catch(() => {
+      setErrors({error: "Wrong username or password"});
+    }).finally(() => {
+      setSubmitting(false);
+    });
+  }
 
   return (
     <>
@@ -20,14 +33,9 @@ function LoginForm() {
         <p className="text-sm text-gray-500 mb-3">Explore activities that is happening in your nighberhood</p>
       </div>
       <Formik initialValues={{email: "", password : "", error: null}} 
-        onSubmit={(values, {setErrors , setSubmitting}) => {
-          userStore.login(values).catch(() => {
-            setErrors({error: "Wrong username or password"});
-          }).then(() => {
-            setSubmitting(false);
-          });
-        }
-      }>
+        onSubmit={(values, {setErrors , setSubmitting}) => 
+          handleSubmit(values, setErrors, setSubmitting)}
+      >
         {({isSubmitting , errors}) => (
           <Form>
             <AppTextInput

@@ -17,39 +17,46 @@ export default class UserStore {
 
     login = async (creds: UserFormValues) => {
         try {
-            var user = await agent.account.login(creds);
-            store.commonStore.setToken(user.token);
-            runInAction(() => this.user = user);
-            store.modalStore.closeModal();
-            Routes.navigate('/Activities');
+            await this.tryLogin(creds);
         } catch (err) {
             throw err;
         }
     }
+    
+    private tryLogin = async (creds:UserFormValues) => {
+        var user = await agent.account.login(creds);
+        store.commonStore.setToken(user.token);
+        this.setUser(user);
+    }
+
+    private setUser = (user:User) => {
+        this.user = user;
+    }
 
     register = async (creds: UserFormValues) => {
         try {
-            var user = await agent.account.register(creds);
-            store.commonStore.setToken(user.token);
-            runInAction(() => this.user = user);
-            store.modalStore.closeModal();
-            Routes.navigate('/Activities');
+            await this.tryRegister(creds);
         } catch (err) {
             throw err;
         }
+    }
+    
+    private tryRegister = async (creds:UserFormValues) => {
+        var user = await agent.account.register(creds);
+        store.commonStore.setToken(user.token);
+        this.setUser(user);
     }
 
     logout = () => {
         this.user = null;
         store.commonStore.setToken(null);
         store.activityStore.activityRegistry.clear();
-        Routes.navigate('/');
     }
 
     getUser = async () => {
         try {
             const user = await agent.account.current();
-            runInAction(() => this.user = user);
+            this.setUser(user);
         } catch (error) {
             throw error;
         }

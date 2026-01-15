@@ -1,10 +1,16 @@
-import { Link, NavLink } from "react-router";
+import { Link, NavLink, useNavigate } from "react-router";
 import { useStore } from "../stores/Store";
 import type { CSSProperties } from "react";
 import { observer } from "mobx-react-lite";
 
 function Navbar() {
   const {userStore: {user, logout, isLoggedIn}} = useStore();
+  const navigate = useNavigate();
+
+  function handleLogout() {
+    logout();
+    navigate("/");
+  }
 
   return (
     <div 
@@ -61,7 +67,7 @@ function Navbar() {
           <ul className="dropdown dropdown-end mt-1 menu w-52 rounded-box bg-base-100 shadow-sm"
             popover="auto" id="profile-dropdown" style={{ positionAnchor: "--profile-anchor" } as CSSProperties}>
             <li><Link to={`/Profiles/${user?.username}`}>Profile</Link></li>
-            <li className="text-error"><Link to="/" onClick={logout}>Logout</Link></li>
+            <li className="text-error"><Link to="/" onClick={handleLogout}>Logout</Link></li>
           </ul>
         </div>}
       </div>
