@@ -1,4 +1,4 @@
-import { makeAutoObservable, runInAction } from "mobx";
+import { makeAutoObservable } from "mobx";
 import { Activity, type ActivityFormValues } from "../models/Activity";
 import agent from "../api/agent";
 import {v4 as uuid} from 'uuid';

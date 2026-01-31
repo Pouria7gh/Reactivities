@@ -5,7 +5,7 @@ import { observer } from "mobx-react-lite";
 import LoadingComponent from "../../../layout/LoadingComponent";
 import ActivityDetailedHeader from "./ActivityDetailedHeader";
 import ActivityDetailedInfo from "./ActivityDetailedInfo";
-import ActivityDetailedChat from "./ActivityDetailedChat";
+import ActivityDetailedChat from "./chat/ActivityDetailedChat";
 import ActivityDetailedSideBar from "./ActivityDetailedSidebar";
 
 function Details() {
@@ -26,7 +26,7 @@ function Details() {
       <div className="col-span-10">
         <ActivityDetailedHeader activity={selectedActivity} />
         <ActivityDetailedInfo activity={selectedActivity} />
-        <ActivityDetailedChat />
+        <ActivityDetailedChat activityId={selectedActivity.id} />
       </div>
       <div className="col-span-6">
         <ActivityDetailedSideBar activity={selectedActivity} />
