@@ -27,7 +27,7 @@ public class MappingProfiles : Profile
                 .Where(p => p.IsMain).Select(x => x.Url).FirstOrDefault()));
 
         CreateMap<Comment, CommentDto>()
-            .ForMember(c => c.Username, o => o.MapFrom(s => s.Author.Id))
+            .ForMember(c => c.Username, o => o.MapFrom(s => s.Author.UserName))
             .ForMember(d => d.DisplayName, o => o.MapFrom(s => s.Author.DisplayName))
             .ForMember(d => d.Image, o => o.MapFrom(s => s.Author.Photos
                 .Where(p => p.IsMain).Select(x => x.Url).FirstOrDefault()));
