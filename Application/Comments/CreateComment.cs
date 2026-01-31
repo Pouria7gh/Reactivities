@@ -51,19 +51,23 @@ public class CreateComment
                 await GetAppUserOrThrow();
                 await GetActivityOrThrow(request.ActivityId);
                 CreateComment(request);
+                AddCommentToActivity();
                 await PersistChanges();
                 CreateCommentDto();
                 return Result<CommentDto>.Success(_commentDto); 
 
             } catch (Exception error)
             {
+                Console.WriteLine(error.Message);
                 return Result<CommentDto>.Failure(error.Message);
             }
         }
 
         private async Task GetAppUserOrThrow()
         {
-            var user = await _dataContext.Users.FirstOrDefaultAsync(u => u.Id == _userAccessor.GetUserName());
+            var user = await _dataContext.Users
+                .Include(u => u.Photos)
+                .FirstOrDefaultAsync(u => u.UserName == _userAccessor.GetUserName());
             if (user == null)
             {
                 throw new Exception("User not found");
@@ -89,6 +93,10 @@ public class CreateComment
                 Body = request.Body,
                 CreatedAt = DateTime.Now
             };
+        }
+        private void AddCommentToActivity()
+        {
+            _activity.Comments.Add(_comment);
         }
         private async Task PersistChanges()
         {
