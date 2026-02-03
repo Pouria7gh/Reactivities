@@ -1,5 +1,6 @@
 import { observer } from "mobx-react-lite"
 import type { Comment } from "../../../../models/Comment"
+import { formatDistanceToNow } from "date-fns"
 
 
 interface props {
@@ -17,12 +18,11 @@ function ChatBubble({comment}: props) {
           />
         </div>
       </div>
-      <div className="chat-header">
+      <div className={`chat-header ${comment.isCurrentUser ? "flex-row-reverse" : ""}`}>
         {comment.displayName}
-        <time className="text-xs opacity-50">{}</time>
+        <time className="text-xs opacity-50 mx-2">{formatDistanceToNow(comment.createdAt)}</time>
       </div>
       <div className="chat-bubble whitespace-pre-wrap break-all">{comment.body}</div>
-      <div className="chat-footer opacity-50">Delivered</div>
     </div>
   )
 }
