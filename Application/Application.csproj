@@ -23,6 +23,7 @@
 
   <ItemGroup>
     <Folder Include="Comments\" />
+    <Folder Include="Followers\" />
   </ItemGroup>
 
 </Project>
