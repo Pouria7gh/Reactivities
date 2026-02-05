@@ -42,7 +42,7 @@ public class FollowToggle
         
             if (target == null) return null;
 
-            var following = await _dataContext.UserFollowings.FindAsync(observer.UserName, target.UserName);
+            var following = await _dataContext.UserFollowings.FindAsync(observer.Id, target.Id);
         
             if (following == null)
             {
