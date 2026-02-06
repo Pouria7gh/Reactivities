@@ -23,7 +23,8 @@ function ActivityDetailedSideBar({activity : {attendees, host}}: props) {
           <img src={attendee.image || "/assets/user.png"} alt={attendee.displayName} className="w-15 rounded-full" />
           <div className="ms-2 me-auto">
             <Link to={`/profiles/${attendee.username}`} className="mt-1">{attendee.displayName}</Link>
-            <p className="text-warning text-sm">following</p>
+            {attendee.following &&
+            <p className="text-warning text-sm">following</p>}
           </div>
           {attendee.username == host?.username &&
           <div className="badge badge-warning mt-4">host</div>}

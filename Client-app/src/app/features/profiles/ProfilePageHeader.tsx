@@ -16,11 +16,11 @@ function ProfilePageHeader({profile}: Props) {
         <p className="text-2xl ms-3 me-auto">{profile.displayName}</p>
         <div className="grid grid-cols-10 gap-x-5 text-center">
             <div className="col-span-5">
-                <p className="text-4xl">52</p>
+                <p className="text-4xl">{profile.followersCount}</p>
                 <p>Followers</p>
             </div>
             <div className="col-span-5">
-                <p className="text-4xl">100</p>
+                <p className="text-4xl">{profile.followingCount}</p>
                 <p>Following</p>
             </div>
             <div className="divider col-span-10 my-2"></div>

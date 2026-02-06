@@ -1,28 +1,28 @@
 import { observer } from "mobx-react-lite";
-import { Profile } from "../../models/Profile"
 import { useEffect, useState } from "react";
+import type { ActivityAttendee } from "../../models/ActivityAttendee";
 
 interface props {
-    profile : Profile;
+  attendee : ActivityAttendee;
 }
 
-function ProfileCardPopover({profile}: props) {
+function ProfileCardPopover({attendee}: props) {
   const [bio, setBio] = useState<string>();
 
   useEffect(() => {
     const truncateAt = 50;
 
-    if (!profile.bio) {
-      setBio(profile.bio);
+    if (!attendee.bio) {
+      setBio(attendee.bio);
       return;
     }
 
-    if (profile.bio.length > truncateAt) {
-      setBio(profile.bio.slice(0, truncateAt).concat("..."));
+    if (attendee.bio.length > truncateAt) {
+      setBio(attendee.bio.slice(0, truncateAt).concat("..."));
     } else {
-      setBio(profile.bio);
+      setBio(attendee.bio);
     }
-  }, [profile.bio])
+  }, [attendee.bio])
 
   return (
     <div
@@ -39,9 +39,9 @@ function ProfileCardPopover({profile}: props) {
         break-all
       "
     >
-      <p className="text-lg">{profile.displayName}</p>
+      <p className="text-lg">{attendee.displayName}</p>
       <p>{bio ? bio : <span className="text-gray-400">no bio.</span>}</p>
-      <p className="mt-2">20 | followers</p>
+      <p className="mt-2">{attendee.followersCount} | followers</p>
     </div>
   )
 }
