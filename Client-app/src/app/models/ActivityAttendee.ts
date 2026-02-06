@@ -5,6 +5,8 @@ export interface ActivityAttendee {
     displayName: string;
     image?: string;
     bio?: string;
+    followersCount: number;
+    following: boolean;
 }
 
 export class ActivityAttendee implements ActivityAttendee {
