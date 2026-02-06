@@ -7,6 +7,7 @@ using Application.Common;
 using Application.Interfaces;
 using Infrastructure.Security;
 using Infrastructure.Photos;
+using AutoMapper;
 
 namespace API.Extensions;
 
@@ -34,10 +35,13 @@ public static class ApplicationServiceExtensions
             config.RegisterServicesFromAssembly(typeof(List).Assembly);
             config.AddOpenBehavior(typeof(ValidationBehavior<,>));
         });
-        services.AddAutoMapper(typeof(MappingProfiles).Assembly);
+        services.AddSingleton<IUserAccessor, UserAccessor>();
+        services.AddSingleton(provider => new MapperConfiguration(cnf =>
+        {
+            cnf.AddProfile(new MappingProfiles(provider.GetService<IUserAccessor>()));
+        }).CreateMapper());
         services.AddSwaggerGen();
         services.AddHttpContextAccessor();
-        services.AddScoped<IUserAccessor, UserAccessor>();
         services.AddScoped<IPhotoAccessor, PhotoAccessor>();
         services.Configure<CloudinarySettings>(config.GetSection("Cloudinary"));
         services.AddSignalR();
