@@ -1,11 +1,14 @@
 import { observer } from "mobx-react-lite";
 import type { Profile } from "../../models/Profile"
+import ProfileFollowButton from "./ProfileFollowButton";
+import { useStore } from "../../stores/Store";
 
 interface Props {
     profile: Profile;
 }
 
 function ProfilePageHeader({profile}: Props) {
+    const {profileStore:{checkIsCurrentUser}} = useStore();
   return (
     <div className="bg-base-100 inset-ring inset-ring-gray-300 shadow-lg py-3 px-6 rounded rounded-lg flex items-center">
         <img 
@@ -23,8 +26,9 @@ function ProfilePageHeader({profile}: Props) {
                 <p className="text-4xl">{profile.followingCount}</p>
                 <p>Following</p>
             </div>
+            {!checkIsCurrentUser(profile.username) && (<>
             <div className="divider col-span-10 my-2"></div>
-            <button className="btn btn-info col-span-10">Following</button>
+            <ProfileFollowButton profile={profile} className="col-span-10"/></>)}
         </div>
     </div>
   )

@@ -329,4 +329,29 @@ export default class ActivityStore {
             }
         })
     }
+    
+    updateFollowingAttendee = (username:string, shouldFollow:boolean) => {
+        for (const activity of this.activityRegistry.values()) {
+            const attendee = activity.attendees.find(x => x.username == username);
+            if (!attendee) continue;
+
+            if (shouldFollow) {
+                this.followAttendee(attendee);
+            } else {
+                this.unFollowAttendee(attendee);
+            }
+        }
+    }
+    
+    private followAttendee = (attendee:ActivityAttendee) => {
+        if (attendee.following) return;
+        attendee.following = true;
+        attendee.followersCount++;
+    }
+
+    private unFollowAttendee = (attendee:ActivityAttendee) => {
+        if (!attendee.following) return;
+        attendee.following = false;
+        attendee.followersCount--;
+    }
 }

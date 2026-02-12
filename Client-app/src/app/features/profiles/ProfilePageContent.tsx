@@ -4,6 +4,7 @@ import ProfilePhotoTabContent from "./ProfilePhotosTab";
 import { useStore } from "../../stores/Store";
 import type ProfileStore from "../../stores/ProfileStore";
 import ProfileAboutTab from "./ProfileAboutTab";
+import ProfileFollowTabContent from "./ProfileFollowTabContent";
 
 function ProfilePageContent() {
   const { profileStore } = useStore();
@@ -12,7 +13,7 @@ function ProfilePageContent() {
 
   return (
     <div className="flex items-start gap-5 mt-5">
-      <div className="flex-[2] bg-base-100 inset-ring inset-ring-gray-300 shadow-lg rounded rounded-lg min-h-50 mb-5">
+      <div className="flex-[2] bg-base-100 inset-ring inset-ring-gray-300 shadow-lg rounded rounded-lg min-h-50 mb-5 relative">
         {activeTabContent.renderTabContent()}
       </div>
       <ul className="items-start bg-base-100 inset-ring inset-ring-gray-300 shadow-lg rounded rounded-lg">
@@ -57,12 +58,24 @@ function getTabContents(profileStore: ProfileStore) {
     {
       id: 4,
       menuItem: "Followers",
-      renderTabContent: () => "Security and passwords",
+      renderTabContent: () => (
+        <ProfileFollowTabContent
+          predicate="followers"
+          displayName={profileStore.profile!.displayName}
+          username={profileStore.profile!.username}
+        />
+      ),
     },
     {
       id: 5,
-      menuItem: "Following",
-      renderTabContent: () => "Security and passwords",
+      menuItem: "Followings",
+      renderTabContent: () => (
+        <ProfileFollowTabContent
+          predicate="followings"
+          displayName={profileStore.profile!.displayName}
+          username={profileStore.profile!.username}
+        />
+      ),
     },
   ];
 }

@@ -1,6 +1,7 @@
 import { observer } from "mobx-react-lite"
 import type { Comment } from "../../../../models/Comment"
 import { formatDistanceToNow } from "date-fns"
+import { useNavigate } from "react-router"
 
 
 interface props {
@@ -8,13 +9,16 @@ interface props {
 }
 
 function ChatBubble({comment}: props) {
+  const navigate = useNavigate();
+
   return (
     <div className={`chat m-2 ${comment.isCurrentUser ? "chat-end" : "chat-start"}`}>
       <div className="chat-image avatar self-start mt-3">
-        <div className="w-10 rounded-full">
+        <div className="w-10 rounded-full cursor-pointer">
           <img
-              alt="User"
-              src={comment.image || "/assets/user.png"}
+            alt="User"
+            src={comment.image || "/assets/user.png"}
+            onClick={() => navigate(`/profiles/${comment.username}`)}
           />
         </div>
       </div>

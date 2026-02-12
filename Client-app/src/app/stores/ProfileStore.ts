@@ -1,5 +1,5 @@
-import { makeAutoObservable } from "mobx";
-import type { Profile, ProfileFormValues } from "../models/Profile";
+import { makeAutoObservable, reaction } from "mobx";
+import { Profile, type ProfileFormValues } from "../models/Profile";
 import agent from "../api/agent";
 import { store } from "./Store";
 import type Photo from "../models/Photo";
@@ -7,13 +7,20 @@ import type Photo from "../models/Photo";
 export default class ProfileStore {
     loadingProfile: boolean = false;
     profile: Profile | null = null;
+    followers: Profile[] | null = null;
+    followings: Profile[] | null = null;
     uploading = false;
     mainPhotoLoading = false;
     deletePhotoLoading = false;
     updateProfileLoading = false;
+    updatingFollowing = false;
 
     constructor() {
-        makeAutoObservable(this);        
+        makeAutoObservable(this);
+        reaction(() => this.profile, () => {
+            this.followers = null;
+            this.followings = null;
+        })  
     }
 
     get isCurrentUser() {
@@ -219,5 +226,92 @@ export default class ProfileStore {
 
     private setUpdateProfileLoading = (state: boolean) => {
         this.updateProfileLoading = state;
+    }
+
+    updateFollowing = async (username:string, shouldFollow:boolean) => {
+        if (this.checkIsCurrentUser(username)) {
+            return;
+        }
+
+        this.setUpdatingFollowing(true);
+        try {
+            await this.handleUpdateFollowing(username, shouldFollow);
+        } catch (error) {
+            console.log(error);
+        } finally {
+            this.setUpdatingFollowing(false);
+        }
+    }
+
+    checkIsCurrentUser = (username:string) => {
+        const user = store.userStore.user;
+        if (!user) {
+            return false;
+        }
+        return username === user.username;
+    }
+
+    private setUpdatingFollowing = (state:boolean) => {
+        this.updatingFollowing = state;
+    }
+
+    private handleUpdateFollowing = async (username:string, shouldFollow:boolean) => {
+        await agent.following.followToggle(username);
+        store.activityStore.updateFollowingAttendee(username, shouldFollow);
+        this.updateProfileFollowing(username, shouldFollow);
+        this.updateFollowersList(shouldFollow);
+    }
+
+    private updateProfileFollowing = (username:string, shouldFollow:boolean) => {
+        const profile = this.profile;
+        if (!profile || profile.username !== username || profile.following === shouldFollow) return;
+        profile.following = shouldFollow;
+        shouldFollow ? profile.followersCount++ : profile.followersCount--;
+    }
+
+    private updateFollowersList = (shouldFollow:boolean) => {
+        if (shouldFollow) {
+            this.addUserToFollowersList();
+        } else {
+            this.removeUserFromFollowersList();
+        }
+    }
+
+    private addUserToFollowersList = () => {
+        const user = store.userStore.user;
+        if (!user || !this.followers) return;
+        this.followers = [new Profile(user), ...this.followers];
+    }
+
+    private removeUserFromFollowersList = () => {
+        const username = store.userStore.user?.username;
+        if (!this.followers || !username) return;
+        this.followers = this.followers.filter(x => x.username !== username);
+    }
+
+    listFollowings = async (username:string) => {
+        try {
+            const followings = await agent.following.listFollowings(username);
+            this.setFollowings(followings);
+        } catch (error) {
+            console.log(error);
+        }
+    }
+    
+    private setFollowings = (followings:Profile[]) => {
+        this.followings = followings;
+    }
+
+    listFollowers = async (username:string) => {
+        try {
+            const followers = await agent.following.listFollowers(username);
+            this.setFollowers(followers);
+        } catch (error) {
+            console.log(error);
+        }
+    }
+    
+    private setFollowers = (followers:Profile[]) => {
+        this.followers = followers;
     }
 }

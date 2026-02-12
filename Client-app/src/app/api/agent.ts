@@ -96,11 +96,18 @@ const photos = {
     setMainPhoto: (photoId: string) => requests.post<void>(`/Photos/${photoId}/setMain`, {})
 }
 
+const following = {
+    followToggle: (username:string) => requests.post(`Follow/${username}`, {}),
+    listFollowings: (username:string) => requests.get<Profile[]>(`Follow/${username}/Followings`),
+    listFollowers: (username:string) => requests.get<Profile[]>(`Follow/${username}/Followers`),
+}
+
 const agent = {
     account,
     activities,
+    following,
     photos,
-    profile
+    profile,
 }
 
 export default agent;
