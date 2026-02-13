@@ -24,6 +24,27 @@ public class BaseApiController : ControllerBase
         return BadRequest(result.Error);
     }
 
+    protected IActionResult HandlePagedResult<T>(Result<PagedList<T>> result)
+    {
+        if (!ModelState.IsValid)
+            return ValidationProblem();
+        if (result == null)
+            return NotFound();
+        if (result.IsSuccess && result.Value != null)
+        {
+            Response.AddPaginationHeader(
+                result.Value.CurrentPage, 
+                result.Value.PageSize, 
+                result.Value.TotalCount, 
+                result.Value.TotalPages
+            );
+            return Ok(result.Value);
+        }
+        if (result.IsSuccess && result.Value == null)
+            return NotFound();
+        return BadRequest(result.Error);
+    }
+
     protected async Task<TResult> Send<TResult>(IRequest<TResult> request)
     {
         return await Mediator.TrySend(request, ModelState);
