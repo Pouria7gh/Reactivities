@@ -7,9 +7,12 @@ import { store } from "./Store";
 import { Profile } from "../models/Profile";
 import type { User } from "../models/User";
 import { ActivityAttendee } from "../models/ActivityAttendee";
+import { PagingParams, type Pagination } from "../models/Pagination";
 export default class ActivityStore {
     activityRegistry: Map<string, Activity> = new Map();
     selectedActivity: Activity | undefined = undefined;
+    pagination: Pagination | null = null;
+    pagingParams = new PagingParams();
     loadingInitial = false;
     deleting = false;
     updatingAttendance = false;
@@ -17,6 +20,17 @@ export default class ActivityStore {
 
     constructor() {
         makeAutoObservable(this);
+    }
+
+    setPagingParams(pagingParams: PagingParams) {
+        this.pagingParams = pagingParams;
+    }
+
+    get axiosParams() {
+        const params = new URLSearchParams();
+        params.append("pageNumber", this.pagingParams.pageNumber.toString());
+        params.append("pageSize", this.pagingParams.pageSize.toString());
+        return params;
     }
 
     get activitiesByDate() {
@@ -50,8 +64,14 @@ export default class ActivityStore {
     }
 
     private performLoadActivities = async () => {
-        const activities = await agent.activities.list();
-        this.registerActivities(activities);
+        const result = await agent.activities.list(this.axiosParams);
+        this.registerActivities(result.data);
+        this.setPagination(result.pagination);
+    }
+
+    private setPagination(pagination: Pagination)
+    {
+        this.pagination = pagination;
     }
 
     private registerActivities = (activities: Activity[]) => {
