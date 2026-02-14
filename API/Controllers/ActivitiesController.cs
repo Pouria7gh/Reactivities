@@ -9,7 +9,7 @@ namespace API.Controllers;
 public class ActivitiesController : BaseApiController
 {
     [HttpGet]
-    public async Task<IActionResult> GetActivities([FromQuery] PagingParams param)
+    public async Task<IActionResult> GetActivities([FromQuery] ActivityListParams param)
     {
         return HandlePagedResult(await Send(new List.Query() { Params = param }));
     }
