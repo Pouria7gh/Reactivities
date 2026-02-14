@@ -9,7 +9,7 @@ function ActivityList() {
   const { groupedActivitiesByDate } = activityStore;
 
   return (
-    <ul className="list bg-base-100 rounded-box shadow-md">
+    <ul className="list bg-base-100 rounded-box">
       {groupedActivitiesByDate.map(([group, activities]) => (
         <div key={group}>
           <li className="p-4 pb-2 text-xs text-blue-900 tracking-wide">
