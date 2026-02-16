@@ -13,7 +13,7 @@ function ActivitiyDashboard() {
   const [loadingNext, setLoadingNext] = useState(false);
 
   function handleLoadMore() {
-    if (loadingNext) return;
+    if (loadingNext || activityStore.loadingInitial) return;
     setLoadingNext(true);
     activityStore.setPagingParams(new PagingParams(activityStore.pagination!.currentPage + 1));
     activityStore.loadActivities().then(() => setLoadingNext(false));
