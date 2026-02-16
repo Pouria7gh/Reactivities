@@ -4,42 +4,36 @@ import InfiniteScroll from 'react-infinite-scroller';
 
 import { useStore } from '../../../stores/Store';
 import ActivityList from './ActivityList'
-import LoadingComponent from '../../../layout/LoadingComponent';
 import ActivityFilters from './ActivityFilters';
-import { PagingParams } from '../../../models/Pagination';
+import ActivityListItemSkeleton from './ActivityListItemSkeleton';
 
 function ActivitiyDashboard() {
   const {activityStore} = useStore();
-  const [loadingNext, setLoadingNext] = useState(false);
-
-  function handleLoadMore() {
-    if (loadingNext || activityStore.loadingInitial) return;
-    setLoadingNext(true);
-    activityStore.setPagingParams(new PagingParams(activityStore.pagination!.currentPage + 1));
-    activityStore.loadActivities().then(() => setLoadingNext(false));
-  }
-
-  function hasMore() {
-    if (!activityStore.pagination) return false;
-    const hasMorePages = activityStore.pagination.currentPage < activityStore.pagination.totalPages;
-    return hasMorePages;
-  }
+  const [loadingMore, setLoadingMore] = useState(false);
   
   useEffect(() => {
-    if (activityStore.activityRegistry.size <= 1)
-    activityStore.loadActivities();
+    if (activityStore.activityRegistry.size <= 1) {
+      activityStore.loadActivities()
+    }
   }, []);
+
+  function handleLoadMore() {
+    if (loadingMore) return;
+    setLoadingMore(true);
+    activityStore.loadNextActivities().then(() => {
+      setLoadingMore(false);
+    });
+  }
 
   return (
     <div className='container mx-auto px-4 grid grid-cols-18 gap-5'>
       
-      {activityStore.loadingInitial && !loadingNext && <LoadingComponent text='Loading Activities...' />}
-      
       <div className="col-span-12">
+        {!activityStore.loadingInitial &&
         <InfiniteScroll
           loadMore={handleLoadMore}
           pageStart={1}
-          hasMore={hasMore()}
+          hasMore={activityStore.hasMoreActivities}
           loader={(
             <div key="12" className='flex justify-center items-center p-5'>
               <span className='loading loading-lg loading-primary'></span>
@@ -47,7 +41,10 @@ function ActivitiyDashboard() {
           )}
         >
           <ActivityList />
-        </InfiniteScroll>
+        </InfiniteScroll>}
+
+        {activityStore.loadingInitial &&
+        <ActivityListItemSkeleton/>}
 
       </div>
       <div className='col-span-6 mt-10'>
