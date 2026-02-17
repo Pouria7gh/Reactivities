@@ -20,4 +20,11 @@ public class ProfilesController : BaseApiController
             Bio = profileDto.Bio
         }));
     }
+
+    [HttpGet("{username}/activities")]
+    public async Task<IActionResult> GetProfileActivities(string username, [FromQuery] string predicate)
+    {
+        var result = await Send(new ListProfileActivities.Query() {Username = username, Predicate = predicate});
+        return HandleResult(result);
+    }
 }
