@@ -32,7 +32,7 @@ export class CommentStore {
 
     private createHubConnectionWithBuilder = (activityId: string) => {
         return new HubConnectionBuilder()
-            .withUrl(`http://localhost:5000/chat?activityId=${activityId}`, {
+            .withUrl(`${import.meta.env.VITE_CHAT_URL}?activityId=${activityId}`, {
                 accessTokenFactory: () => store.userStore.user!.token
             })
             .withAutomaticReconnect()

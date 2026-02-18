@@ -10,7 +10,7 @@ import type Photo from "../models/Photo";
 import { PaginatedResult } from "../models/Pagination";
 import { type ProfileActivity } from "../models/ProfileActivity";
 
-axios.defaults.baseURL = "http://localhost:5000/api";
+axios.defaults.baseURL = import.meta.env.VITE_API_URL;
 
 const sleep = (delay : number) => {
     return new Promise((resolve) => {
@@ -25,7 +25,9 @@ axios.interceptors.request.use(async request => {
 })
 
 axios.interceptors.response.use(async response => {
-    await sleep(1000);
+    if (import.meta.env.DEV) {
+        await sleep(1000);
+    }
     if (isResponsePaginated(response)) {
         return createPaginatedResult(response);
     }
