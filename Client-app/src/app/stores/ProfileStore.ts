@@ -3,23 +3,27 @@ import { Profile, type ProfileFormValues } from "../models/Profile";
 import agent from "../api/agent";
 import { store } from "./Store";
 import type Photo from "../models/Photo";
+import type { ProfileActivity, ProfileActivityFilter } from "../models/ProfileActivity";
 
 export default class ProfileStore {
     loadingProfile: boolean = false;
     profile: Profile | null = null;
     followers: Profile[] | null = null;
     followings: Profile[] | null = null;
+    activities: ProfileActivity[] | null = null;
     uploading = false;
     mainPhotoLoading = false;
     deletePhotoLoading = false;
     updateProfileLoading = false;
     updatingFollowing = false;
+    loadingActivities = false;
 
     constructor() {
         makeAutoObservable(this);
         reaction(() => this.profile, () => {
             this.followers = null;
             this.followings = null;
+            this.activities = null;
         })  
     }
 
@@ -313,5 +317,49 @@ export default class ProfileStore {
     
     private setFollowers = (followers:Profile[]) => {
         this.followers = followers;
+    }
+
+    loadActivities = async (predicate:ProfileActivityFilter = "futureEvents") => {
+        this.setLoadingActivities(true);
+        try {
+            const username = this.profile?.username;
+            await this.handleLoadActivities(username!, predicate);
+        } catch(error) {
+            console.log(error);
+        } finally{
+            this.setLoadingActivities(false);
+        }
+    }
+
+    private setLoadingActivities = (state:boolean) => {
+        this.loadingActivities = state;
+    }
+
+    private handleLoadActivities = async (username:string, predicate:ProfileActivityFilter = "futureEvents") => {
+        this.clearActivities();
+        const query = this.createActivitySearchParams(predicate);
+        const activities = await agent.profile.getActivities(username, query);
+        this.normalizeActivitiesDate(activities);
+        this.setActivities(activities);
+    }
+
+    private clearActivities = () => {
+        this.activities = null;
+    }
+
+    private createActivitySearchParams = (predicate:ProfileActivityFilter) => {
+        const query = new URLSearchParams();
+        query.append("predicate", predicate);
+        return query;
+    }
+
+    private normalizeActivitiesDate = (activities:ProfileActivity[]) => {
+        activities.forEach(activity => {
+            activity.date = new Date(activity.date);
+        })
+    }
+
+    private setActivities = (activities:ProfileActivity[]) => {
+        this.activities = activities;
     }
 }
