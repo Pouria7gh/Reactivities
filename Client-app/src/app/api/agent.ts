@@ -8,6 +8,7 @@ import { type User, type UserFormValues } from "../models/User";
 import { Profile, type ProfileFormValues } from "../models/Profile";
 import type Photo from "../models/Photo";
 import { PaginatedResult } from "../models/Pagination";
+import { type ProfileActivity } from "../models/ProfileActivity";
 
 axios.defaults.baseURL = "http://localhost:5000/api";
 
@@ -99,7 +100,9 @@ const account = {
 
 const profile = {
     get: (username: string) => requests.get<Profile>(`/profiles/${username}`),
-    update: (profile: ProfileFormValues) => requests.post<void>('/profiles/updateProfile', profile)
+    update: (profile: ProfileFormValues) => requests.post<void>('/profiles/updateProfile', profile),
+    getActivities: (username:string, params:URLSearchParams) => 
+        requests.getWithParams<ProfileActivity[]>(`profiles/${username}/activities/`, params)
 }
 
 const photos = {
