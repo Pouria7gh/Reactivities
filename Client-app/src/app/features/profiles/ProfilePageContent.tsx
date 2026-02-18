@@ -5,6 +5,7 @@ import { useStore } from "../../stores/Store";
 import type ProfileStore from "../../stores/ProfileStore";
 import ProfileAboutTab from "./ProfileAboutTab";
 import ProfileFollowTabContent from "./ProfileFollowTabContent";
+import ProfileEventsTab from "./ProfileEventsTab";
 
 function ProfilePageContent() {
   const { profileStore } = useStore();
@@ -53,7 +54,9 @@ function getTabContents(profileStore: ProfileStore) {
     {
       id: 3,
       menuItem: "Events",
-      renderTabContent: () => "Security and passwords",
+      renderTabContent: () => (
+        <ProfileEventsTab/>
+      ),
     },
     {
       id: 4,
