@@ -17,7 +17,7 @@ public static class ApplicationServiceExtensions
     {
         services.AddDbContext<DataContext>(options =>
         {
-            options.UseSqlServer(config.GetConnectionString("Default"));
+            options.UseNpgsql(config.GetConnectionString("Default"));
         });
         services.AddCors(options =>
         {
