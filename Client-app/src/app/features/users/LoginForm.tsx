@@ -13,6 +13,7 @@ function LoginForm() {
   const navigate = useNavigate();
 
   function handleSubmit(values:any, setErrors:any, setSubmitting:any) {
+    values.email = values.email.trim().toLowerCase();
     userStore.login(values).then(() => {
       modalStore.closeModal();
       navigate("/Activities");
