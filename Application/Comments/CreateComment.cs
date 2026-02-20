@@ -91,7 +91,7 @@ public class CreateComment
                 Activity = _activity,
                 Author = _appUser,
                 Body = request.Body,
-                CreatedAt = DateTime.Now
+                CreatedAt = DateTime.UtcNow
             };
         }
         private void AddCommentToActivity()
