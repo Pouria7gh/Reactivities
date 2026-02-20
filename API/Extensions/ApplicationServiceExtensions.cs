@@ -25,7 +25,7 @@ public static class ApplicationServiceExtensions
             {
                 policy.AllowAnyMethod()
                     .AllowAnyHeader()
-                    .WithOrigins("https://reactivities-client.onrender.com/")
+                    .WithOrigins(config["ClientAppUrl"])
                     .AllowCredentials();
             });
         });
