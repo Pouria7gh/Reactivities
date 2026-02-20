@@ -25,7 +25,7 @@ public static class ApplicationServiceExtensions
             {
                 policy.AllowAnyMethod()
                     .AllowAnyHeader()
-                    .WithOrigins("http://localhost:3000")
+                    .WithOrigins(config["ClientAppUrl"])
                     .AllowCredentials();
             });
         });
