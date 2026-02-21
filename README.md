@@ -34,7 +34,8 @@ A full-stack event management application built with a modern architecture and c
 * TypeScript
 * Axios
 * React Router
-* Bootstrap / Custom Styling
+* Mobx
+* Tailwind / Custom Styling
 
 ## 📸 Features
 
