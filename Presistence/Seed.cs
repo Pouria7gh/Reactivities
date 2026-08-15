@@ -17,19 +17,55 @@ namespace Persistence
                     {
                         DisplayName = "Bob",
                         UserName = "bob",
-                        Email = "bob@test.com"
+                        Email = "bob@test.com",
+                        Photos = [
+                            new Photo() {
+                                IsMain = true,
+                                CreatedAt = DateTime.UtcNow,
+                                Id = "rhfv8dph3pplrfoe74xa",
+                                Url = "https://res.cloudinary.com/dzlpql6fe/image/upload/v1771603191/rhfv8dph3pplrfoe74xa.png"
+                            },
+                            new Photo() {
+                                IsMain = false,
+                                CreatedAt = DateTime.UtcNow,
+                                Id = "bmxjbqv92owallpcym27",
+                                Url = "https://res.cloudinary.com/dzlpql6fe/image/upload/v1771602432/bmxjbqv92owallpcym27.png"
+                            }
+                        ]
                     },
                     new AppUser
                     {
                         DisplayName = "Jane",
                         UserName = "jane",
-                        Email = "jane@test.com"
+                        Email = "jane@test.com",
+                        Photos = [
+                            new Photo() {
+                                IsMain = true,
+                                CreatedAt = DateTime.UtcNow,
+                                Id = "gsci9ziphmcm85vdghgd",
+                                Url = "https://res.cloudinary.com/dzlpql6fe/image/upload/v1771603387/gsci9ziphmcm85vdghgd.png"
+                            }
+                        ]
                     },
                     new AppUser
                     {
                         DisplayName = "Tom",
                         UserName = "tom",
-                        Email = "tom@test.com"
+                        Email = "tom@test.com",
+                        Photos = [
+                            new Photo() {
+                                IsMain = true,
+                                CreatedAt = DateTime.UtcNow,
+                                Id = "nxzqbtnj7d63rh6kgtmm",
+                                Url = "https://res.cloudinary.com/dzlpql6fe/image/upload/v1771603324/nxzqbtnj7d63rh6kgtmm.png"
+                            },
+                            new Photo() {
+                                IsMain = false,
+                                CreatedAt = DateTime.UtcNow,
+                                Id = "voirh57eond0evswh1xm",
+                                Url = "https://res.cloudinary.com/dzlpql6fe/image/upload/v1771603293/voirh57eond0evswh1xm.png"
+                            }
+                        ]
                     },
                 };
 
